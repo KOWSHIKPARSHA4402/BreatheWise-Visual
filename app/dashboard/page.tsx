@@ -1,24 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useLocationContext } from "@/context/LocationContext";
-import AqiHeroCard from "@/components/dashboard/AqiHeroCard";
+import AirIndxHero from "@/components/dashboard/AirIndxHero";
+import GlobalHotspotsSection from "@/components/dashboard/GlobalHotspotsSection";
 import PollutantGrid from "@/components/dashboard/PollutantGrid";
 import TrendChart from "@/components/dashboard/TrendChart";
+import VulnerableAdvisory from "@/components/dashboard/VulnerableAdvisory";
 import QuickActionBanner from "@/components/dashboard/QuickActionBanner";
 import ImpactCommunitySection from "@/components/dashboard/ImpactCommunitySection";
-import VulnerableAdvisory from "@/components/dashboard/VulnerableAdvisory";
-import { AlertCircle, RefreshCw } from "lucide-react";
+import DetailsModal from "@/components/dashboard/DetailsModal";
+import { AlertCircle } from "lucide-react";
+import { LocationData } from "@/lib/types";
 
 export default function DashboardPage() {
-  const { airQuality, isLoading, error, refreshAirQuality } = useLocationContext();
+  const { airQuality, isLoading, error, refreshAirQuality, setLocation } = useLocationContext();
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   if (isLoading && !airQuality) {
     return (
       <div className="h-96 flex flex-col items-center justify-center space-y-4">
-        <RefreshCw className="w-8 h-8 text-emerald-500 animate-spin" />
-        <div className="text-sm font-mono text-slate-400">
-          Fetching live atmospheric telemetry from Open-Meteo &amp; Copernicus CAMS...
+        <div className="w-10 h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+        <div className="text-xs font-mono text-cyan-300">
+          Streaming planetary air quality telemetry from Open-Meteo &amp; Copernicus CAMS...
         </div>
       </div>
     );
@@ -34,7 +38,7 @@ export default function DashboardPage() {
         </p>
         <button
           onClick={() => refreshAirQuality()}
-          className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors"
+          className="px-5 py-2.5 rounded-full bg-cyan-500 text-slate-950 text-xs font-bold hover:bg-cyan-400 transition-colors"
         >
           Try Again
         </button>
@@ -42,64 +46,74 @@ export default function DashboardPage() {
     );
   }
 
+  const handleSelectCityLocation = (loc: LocationData) => {
+    setLocation(loc);
+  };
+
   return (
-    <div className="space-y-10 pb-16">
+    <div className="space-y-12 pb-20">
       {/* ========================================================
-          FIRST SECTION:
-          - Welcome message, selected city and current date
-          - Current AQI overview & Large visual AQI gauge
-          - Pollution severity badge, health advisory, last updated
+          HERO CENTREPIECE SECTION (MATCHES IMAGE 1 - AirIndx)
+          - Left: Air Quality Index, Date/Time, Local flag, Main Statistics Card, Risk of Pollution Card, Share & Coordinates
+          - Right: Massive Interactive 3D Earth Globe (Three.js WebGL) with city AQI pins, active tooltip card, zoom & 3D Globe / IQ Air Map toggle
          ======================================================== */}
-      <section aria-label="Current Air Quality Overview">
-        <AqiHeroCard data={airQuality} />
+      <section aria-label="3D Planetary Air Quality Hero">
+        <AirIndxHero
+          data={airQuality}
+          onSelectCityLocation={handleSelectCityLocation}
+          onOpenDetailsModal={() => setIsDetailsModalOpen(true)}
+        />
       </section>
 
       {/* ========================================================
-          SECOND SECTION:
-          - Responsive grid containing 6 pollutant cards:
-            PM2.5, PM10, NO2, SO2, CO, O3
+          SECTION 1: Global Air Quality Overview & Hotspot Comparison
+         ======================================================== */}
+      <section aria-label="Global Air Quality Hotspots">
+        <GlobalHotspotsSection onSelectCity={handleSelectCityLocation} />
+      </section>
+
+      {/* ========================================================
+          SECTION 2: Key Pollutant Breakdown (PM2.5, PM10, NO2, SO2, CO, O3)
          ======================================================== */}
       <section aria-label="Key Pollutant Concentrations">
         <PollutantGrid data={airQuality} />
       </section>
 
       {/* ========================================================
-          THIRD SECTION:
-          - Air quality trend chart
-          - 24-hour pollution forecast
-          - Weather and atmospheric conditions
-          - Wind speed, humidity and temperature
+          SECTION 3: 24-Hour & 7-Day Air Quality Trend Charts
          ======================================================== */}
       <section aria-label="Pollution Forecast and Atmospheric Conditions">
         <TrendChart data={airQuality} />
       </section>
 
-      {/* Vulnerable Groups Health Advisory */}
+      {/* ========================================================
+          SECTION 4: Vulnerable Population Clinical Advisories
+         ======================================================== */}
       <section aria-label="Vulnerable Population Clinical Advisories">
         <VulnerableAdvisory data={airQuality} />
       </section>
 
       {/* ========================================================
-          FOURTH SECTION:
-          - Action cards for:
-            1. Ask the AI Assistant
-            2. Generate My Clean Air Plan
-            3. Improve Indoor Air Quality
-            4. Explore Green Choices
+          SECTION 5: Intelligent Quick Action Banner
+          (Ask AI, Clean Air Plan, Indoor CADR, Green Choices)
          ======================================================== */}
       <section aria-label="Intelligent Action Center">
         <QuickActionBanner />
       </section>
 
       {/* ========================================================
-          FIFTH SECTION:
-          - Environmental impact summary
-          - Weekly progress
-          - Community awareness section
+          SECTION 6: Environmental Impact & Community Awareness
          ======================================================== */}
       <section aria-label="Environmental Impact and Community Awareness">
         <ImpactCommunitySection />
       </section>
+
+      {/* Detailed Assessment Modal (Triggered by Hero Details Button) */}
+      <DetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        data={airQuality}
+      />
     </div>
   );
 }
