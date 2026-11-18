@@ -2,55 +2,71 @@
 
 import React from "react";
 import Link from "next/link";
-import { Bot, CalendarCheck2, Home, Calculator, ArrowRight } from "lucide-react";
+import {
+  Bot,
+  CalendarCheck2,
+  Home,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
 
 export default function QuickActionBanner() {
   const actions = [
     {
-      title: "AI Smog Assistant",
-      desc: "Ask Gemini what precautions your family needs today.",
+      title: "Ask the AI Assistant",
+      desc: "Get location-aware medical guidance, school recess advice, and outdoor safety protocols powered by Gemini.",
       href: "/assistant",
       icon: Bot,
       color: "from-emerald-500 to-teal-600",
-      badge: "Gemini 1.5",
+      accentBg: "hover:border-emerald-500/60",
+      badge: "Gemini 1.5 Grounded",
+      badgeClass: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
     },
     {
-      title: "My Clean Air Plan",
-      desc: "Personalized daily schedule matching your commute & home.",
+      title: "Generate My Clean Air Plan",
+      desc: "Create an adaptive 4-phase daily schedule matched to your commute method, work hours, and children's routines.",
       href: "/planner",
       icon: CalendarCheck2,
       color: "from-sky-500 to-blue-600",
-      badge: "Actionable",
+      accentBg: "hover:border-sky-500/60",
+      badge: "Adaptive Schedule",
+      badgeClass: "bg-sky-500/20 text-sky-300 border-sky-500/30",
     },
     {
-      title: "Indoor Air Centre",
-      desc: "CADR calculator & evidence-based HEPA filtration guides.",
+      title: "Improve Indoor Air Quality",
+      desc: "Calculate required True-HEPA CADR for your bedroom and learn scientific techniques for diurnal ventilation.",
       href: "/indoor-air",
       icon: Home,
       color: "from-indigo-500 to-purple-600",
-      badge: "HEPA Guide",
+      accentBg: "hover:border-indigo-500/60",
+      badge: "CADR Calculator",
+      badgeClass: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
     },
     {
-      title: "Impact Calculator",
-      desc: "Calculate CO2 and tailpipe emissions saved by your choices.",
-      href: "/calculator",
-      icon: Calculator,
-      color: "from-amber-500 to-orange-600",
-      badge: "DEFRA Factors",
+      title: "Explore Green Choices",
+      desc: "Discover sustainable transit alternatives that adapt automatically based on whether ambient smog is safe or severe.",
+      href: "/green-choices",
+      icon: Sparkles,
+      color: "from-teal-500 to-emerald-600",
+      accentBg: "hover:border-teal-500/60",
+      badge: "AQI-Sensitive",
+      badgeClass: "bg-teal-500/20 text-teal-300 border-teal-500/30",
     },
   ];
 
   return (
     <div className="space-y-4">
+      {/* Section Header */}
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-          Intelligent Action Tools
+        <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+          <span>Intelligent Action Center</span>
         </h2>
-        <p className="text-xs text-slate-500 font-light">
-          Context-driven features to protect health and minimize urban pollution.
+        <p className="text-xs text-slate-400 font-light">
+          Contextual tools to protect your family&apos;s respiratory health and reduce urban emissions.
         </p>
       </div>
 
+      {/* 4 Attractive Action Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {actions.map((act) => {
           const Icon = act.icon;
@@ -58,31 +74,37 @@ export default function QuickActionBanner() {
             <Link
               key={act.title}
               href={act.href}
-              className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/5 transition-all group flex flex-col justify-between"
+              className={`p-6 rounded-3xl bg-[#0f172a] border border-slate-800 transition-all flex flex-col justify-between space-y-4 shadow-sm group hover:-translate-y-1 hover:shadow-xl ${act.accentBg}`}
             >
               <div className="space-y-3">
+                {/* Header Icon & Badge */}
                 <div className="flex items-center justify-between">
-                  <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${act.color} text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`}>
-                    <Icon className="w-4 h-4" />
+                  <div
+                    className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${act.color} text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform`}
+                  >
+                    <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                  <span
+                    className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border ${act.badgeClass}`}
+                  >
                     {act.badge}
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                  <h3 className="font-bold text-base text-white group-hover:text-emerald-400 transition-colors leading-snug">
                     {act.title}
                   </h3>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                  <p className="mt-1.5 text-xs text-slate-400 font-light leading-relaxed">
                     {act.desc}
                   </p>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-semibold text-emerald-700 dark:text-emerald-400 mt-4">
-                <span>Explore Tool</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              {/* Action Footer */}
+              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-emerald-400 group-hover:text-emerald-300">
+                <span>Launch Tool</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
           );

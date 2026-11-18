@@ -23,14 +23,14 @@ interface MobileNavProps {
 }
 
 const navItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "AQI Deep Dive", href: "/details", icon: Activity },
+  { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Air Quality", href: "/details", icon: Activity },
   { name: "AI Assistant", href: "/assistant", icon: Bot, badge: "Gemini" },
-  { name: "Clean Air Plan", href: "/planner", icon: CalendarCheck2 },
+  { name: "My Clean Air Plan", href: "/planner", icon: CalendarCheck2 },
   { name: "Indoor Air Quality", href: "/indoor-air", icon: Home },
   { name: "Green Choices", href: "/green-choices", icon: Sparkles },
-  { name: "Impact Calculator", href: "/calculator", icon: Calculator },
-  { name: "Community Action", href: "/community", icon: Users2 },
+  { name: "Environmental Impact", href: "/calculator", icon: Calculator },
+  { name: "Community", href: "/community", icon: Users2 },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

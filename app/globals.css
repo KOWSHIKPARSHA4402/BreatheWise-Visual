@@ -4,27 +4,28 @@
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --foreground: #0f172a;
-    --card: #ffffff;
-    --card-foreground: #0f172a;
-    --border: #e2e8f0;
-    --primary: #059669;
+    --background: #080d1a;
+    --foreground: #f8fafc;
+    --card: #0f172a;
+    --card-foreground: #f8fafc;
+    --border: #1e293b;
+    --primary: #10b981;
     --primary-foreground: #ffffff;
   }
 
   .dark {
-    --background: #090d16;
-    --foreground: #f1f5f9;
-    --card: #111827;
-    --card-foreground: #f1f5f9;
+    --background: #080d1a;
+    --foreground: #f8fafc;
+    --card: #0f172a;
+    --card-foreground: #f8fafc;
     --border: #1e293b;
     --primary: #10b981;
-    --primary-foreground: #090d16;
+    --primary-foreground: #080d1a;
   }
 
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   body {
@@ -34,13 +35,9 @@
   }
 }
 
-/* Custom Environmental Gradient Cards */
+/* Subtle SaaS Ambient Glow */
 .card-ambient {
-  background: radial-gradient(120% 120% at 50% 0%, rgba(16, 185, 129, 0.04) 0%, rgba(255, 255, 255, 0) 100%);
-}
-
-.dark .card-ambient {
-  background: radial-gradient(120% 120% at 50% 0%, rgba(16, 185, 129, 0.08) 0%, rgba(17, 24, 39, 0) 100%);
+  background: radial-gradient(120% 120% at 50% 0%, rgba(16, 185, 129, 0.05) 0%, rgba(15, 23, 42, 0) 100%);
 }
 
 /* Clean Custom Scrollbar */
@@ -54,24 +51,16 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #1e293b;
   border-radius: 9999px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Utility Animations */
-@keyframes pulseSubtle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.02); }
-}
-
-.animate-pulse-subtle {
-  animation: pulseSubtle 3s ease-in-out infinite;
+/* Selection */
+::selection {
+  background: rgba(16, 185, 129, 0.3);
+  color: #ffffff;
 }
