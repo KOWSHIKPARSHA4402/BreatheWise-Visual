@@ -1,14 +1,19 @@
 # BreatheWise 🍃
-### AI-Powered Urban Air Quality Assistant & Winter Smog Navigator
-**Built for Hack2Skill PromptWars Challenge 6 (Urban Air Quality & Winter Smog Navigation)**
+### Planetary 3D Air Quality Intelligence & Winter Smog Navigator
+**AI-Powered Environmental Platform Powered by Google Gemini & Copernicus CAMS**
 
+[![Live Demo on Vercel](https://img.shields.io/badge/Live%20Demo-Vercel%20Deployment-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://breathewise-visual-git-main-kowshiks-projects-143ca58e.vercel.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/KOWSHIKPARSHA4402/BreatheWise-Visual)
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
 [![Google Gemini](https://img.shields.io/badge/Google%20Gemini-1.5%20Flash-4285F4?style=flat&logo=google)](https://deepmind.google/technologies/gemini/)
 [![CPCB NAQI](https://img.shields.io/badge/Standard-CPCB%20India%20NAQI-emerald)](https://cpcb.nic.in/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-5%2F5%20Passing-brightgreen)](tests/aqi-and-emissions.test.mjs)
-[![Repo Size](https://img.shields.io/badge/Repo%20Size-%3C%201%20MB%20(Rule%3A%20%3C10MB)-success)]()
+[![Tests](https://img.shields.io/badge/Automated%20Tests-10%2F10%20Passing-brightgreen)](tests/aqi-and-emissions.test.mjs)
+
+> 🌍 **LIVE PRODUCTION DEPLOYMENT:**  
+> **👉 [https://breathewise-visual.vercel.app](https://breathewise-visual-git-main-kowshiks-projects-143ca58e.vercel.app/)**  
+> *Click above to explore the live interactive 3D Earth globe, real-time CPCB telemetry, Clean Air School, and AI assistant directly in your browser without local installation.*
 
 ---
 
@@ -162,8 +167,8 @@ $$\text{Weekly Saved } \text{CO}_2 \text{ (kg)} = (\text{Commute Distance } \tim
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/2400090091kl/breathewise.git
-cd breathewise
+git clone https://github.com/KOWSHIKPARSHA4402/BreatheWise-Visual.git
+cd BreatheWise-Visual
 ```
 
 ### 2. Install Dependencies
@@ -174,18 +179,20 @@ npm install
 ### 3. Configure Environment Variables
 Create a `.env.local` file in the root directory (refer to `.env.example`):
 ```env
-# Optional but recommended for full Google Gemini AI reasoning:
+# Optional: Add your Google Gemini API key for dynamic LLM chat:
 GEMINI_API_KEY=your_gemini_api_key_here
 
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
-> *Note:* BreatheWise is fully functional even without an API key! If `GEMINI_API_KEY` is not provided, the server automatically uses its built-in rule-based scientific guidance engine.
+> *Note:* BreatheWise is fully functional even without an API key! If `GEMINI_API_KEY` is not provided, the system automatically uses its built-in rule-based scientific guidance engine.
 
 ### 4. Run Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+- **Local Dev:** Open [http://localhost:3000](http://localhost:3000) in your browser.
+- **🌐 Live Cloud Deployment:** Anyone can access the production platform directly on Vercel at:  
+  👉 **[https://breathewise-visual.vercel.app](https://breathewise-visual-git-main-kowshiks-projects-143ca58e.vercel.app/)**
 
 ### 5. Run Automated Tests
 ```bash
@@ -233,27 +240,27 @@ The automated test suite (`tests/aqi-and-emissions.test.mjs`) validates:
 
 ### Suggested LinkedIn Post
 ```text
-🌿 Excited to unveil BreatheWise — an AI-powered Urban Air Quality Assistant built for the Hack2Skill PromptWars Challenge 6!
+🌿 Excited to unveil BreatheWise — an AI-powered Planetary Air Quality Platform & Winter Smog Navigator!
 
 Every winter, millions of families battle severe winter smog and toxic PM2.5 without personalized guidance. 
 
 BreatheWise combines real-time Copernicus atmospheric telemetry with Google Gemini GenAI to provide:
-✅ Factual CPCB NAQI and meteorological inversion tracking
-✅ Context-aware 5-part family health guidance
+✅ Interactive 3D Earth planetary simulation with CPCB Indian NAQI & US EPA standards
+✅ Context-aware 5-part family health guidance & AI Smog Assistant
 ✅ Dynamic daily clean air schedules & True-HEPA CADR sizing
 ✅ Defensible tailpipe emissions calculations backed by DEFRA factors
+✅ Comprehensive Clean Air School with 8 interactive lessons & quizzes
 
-Built with Next.js 14, TypeScript, Tailwind CSS, and Google Gemini.
+🚀 Live Demo: https://breathewise-visual.vercel.app
+🔗 GitHub: https://github.com/KOWSHIKPARSHA4402/BreatheWise-Visual
 
-Check out the project: https://github.com/2400090091kl/breathewise
-
-#AI #Nextjs #GenAI #Gemini #CleanAir #Hackathon #PromptWars #Hack2Skill #Sustainability
+#AI #Nextjs #GenAI #Gemini #CleanAir #Hackathon #Sustainability #Web3D
 ```
 
 ---
 
 ## 8. License & Repository Compliance
-- **Repository Size:** &lt; 1 MB (strictly complies with the hackathon rule: &lt; 10 MB).
-- **Branch:** Single `master` branch.
+- **Repository Size:** < 1 MB (strictly complies with the hackathon rule: < 10 MB).
+- **Branch:** Single `main` branch.
 - **Public Visibility:** Designed for immediate open-source evaluation.
 - **License:** MIT License. Built with integrity for public health.
