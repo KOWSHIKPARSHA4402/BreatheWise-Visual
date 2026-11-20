@@ -17,14 +17,24 @@ export async function GET(request: NextRequest) {
 
   if (citiesParam) {
     try {
-      locationsToFetch = JSON.parse(citiesParam);
+      const parsed = JSON.parse(citiesParam);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const valid = parsed.filter(
+          (l) => typeof l?.latitude === "number" && typeof l?.longitude === "number"
+        );
+        if (valid.length > 0) {
+          locationsToFetch = valid;
+        }
+      }
     } catch {
-      // Fallback to preset
       locationsToFetch = PRESET_LOCATIONS;
     }
   }
 
-  const cacheKey = locationsToFetch.map((l) => `${l.latitude.toFixed(2)},${l.longitude.toFixed(2)}`).sort().join("|");
+  const cacheKey = locationsToFetch
+    .map((l) => `${(l.latitude ?? 0).toFixed(2)},${(l.longitude ?? 0).toFixed(2)}`)
+    .sort()
+    .join("|");
   const cached = batchCache.get(cacheKey);
 
   if (cached && cached.expiresAt > Date.now()) {
@@ -64,12 +74,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    const locations: LocationData[] = body?.locations || PRESET_LOCATIONS;
-    if (!Array.isArray(locations) || !locations.length) {
-      return NextResponse.json({ error: "locations array is required" }, { status: 400 });
+    const rawLocations = body?.locations;
+    const locations: LocationData[] = Array.isArray(rawLocations)
+      ? rawLocations.filter((l: LocationData) => typeof l?.latitude === "number" && typeof l?.longitude === "number")
+      : PRESET_LOCATIONS;
+
+    if (!locations.length) {
+      return NextResponse.json({ error: "locations array with valid coordinates is required" }, { status: 400 });
     }
 
-    const cacheKey = locations.map((l) => `${l.latitude.toFixed(2)},${l.longitude.toFixed(2)}`).sort().join("|");
+    const cacheKey = locations
+      .map((l) => `${(l.latitude ?? 0).toFixed(2)},${(l.longitude ?? 0).toFixed(2)}`)
+      .sort()
+      .join("|");
     const cached = batchCache.get(cacheKey);
 
     if (cached && cached.expiresAt > Date.now()) {

@@ -24,7 +24,7 @@ import AqiExplainedSection from "@/components/education/AqiExplainedSection";
 import WhyIsAirPollutedSection from "@/components/education/WhyIsAirPollutedSection";
 import AirQualitySchool from "@/components/education/AirQualitySchool";
 import { AlertCircle, Bot, X, ChevronDown, ChevronUp, Sliders, BarChart3 } from "lucide-react";
-import { GlobeCityPin } from "@/components/globe/EarthGlobe3D";
+import type { GlobeCityPin } from "@/components/globe/EarthGlobe3D";
 import { LocationData } from "@/lib/types";
 
 export default function DashboardPage() {
