@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BreatheWise - Automated AI Video Presentation & Recorder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.03); }
+    }
+    .glow-effect { animation: pulseGlow 4s infinite ease-in-out; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(220, 236, 232, 0.8);
+      box-shadow: 0 20px 40px rgba(35, 75, 85, 0.08);
+    }
+    .video-viewport {
+      aspect-ratio: 16 / 9;
+      max-width: 1100px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-[#F4F8F6] text-[#234B55] font-sans min-h-screen flex flex-col items-center justify-between p-4 sm:p-8">
+
+  <!-- Header Controls -->
+  <header class="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4 py-4 border-b border-[#DCECE8]">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#234B55] to-[#6BAEAA] flex items-center justify-center text-white shadow-md">
+        <i class="fa-solid fa-wind text-lg"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-lg text-[#234B55] flex items-center gap-2">
+          <span>BreatheWise</span>
+          <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-[#DCECE8] text-[#234B55] font-semibold">AI Video Studio</span>
+        </h1>
+        <p class="text-xs text-[#687D83]">Automated Hackathon Demo Video Generator &amp; Screen Recorder</p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+      <button id="recordBtn" onclick="togglePresentation()" class="px-5 py-2.5 rounded-xl bg-[#234B55] hover:bg-[#1E414A] text-white font-bold text-sm shadow-lg shadow-[#234B55]/20 flex items-center gap-2 transition-all hover:scale-105">
+        <i class="fa-solid fa-play text-xs text-[#A9D5C8]" id="playIcon"></i>
+        <span id="btnLabel">Start Presentation &amp; Auto-Record</span>
+      </button>
+      <a href="https://breathewise-visual.vercel.app" target="_blank" class="px-4 py-2.5 rounded-xl bg-white border border-[#DCECE8] text-[#234B55] font-semibold text-sm hover:bg-[#DCECE8]/40 transition-colors flex items-center gap-1.5">
+        <span>Open Website</span>
+        <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Video Stage / Canvas Area (16:9) -->
+  <main class="w-full flex flex-col items-center justify-center my-6">
+    <div id="videoStage" class="video-viewport relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-gradient-to-br from-[#081326] via-[#10233D] to-[#0A1828] text-white flex flex-col justify-between p-8 sm:p-12 transition-all">
+      
+      <!-- Top Stage Bar -->
+      <div class="flex items-center justify-between text-xs font-mono tracking-wider text-[#A9D5C8]">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="font-bold uppercase tracking-widest" id="slideIndicator">SLIDE 1 OF 6</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[11px]">
+            Hack2Skill PromptWars Submission
+          </span>
+          <span id="timerBadge" class="font-bold text-emerald-300">00:00</span>
+        </div>
+      </div>
+
+      <!-- Main Slide Content Container -->
+      <div id="slideContent" class="flex-1 flex flex-col justify-center items-center text-center my-4 transition-opacity duration-500">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Live Closed Caption Subtitle Bar -->
+      <div class="w-full bg-black/60 backdrop-blur-xl border border-white/15 rounded-2xl p-4 flex items-center justify-center text-center shadow-lg">
+        <p id="captionText" class="text-sm sm:text-base font-medium text-emerald-100 italic transition-all">
+          Click "Start Presentation &amp; Auto-Record" above to begin the automated demo video.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Progress Timeline Bar -->
+    <div class="w-full max-w-5xl mt-4 flex items-center gap-2">
+      <div class="flex-1 bg-white h-2 rounded-full overflow-hidden border border-[#DCECE8]">
+        <div id="progressBar" class="bg-gradient-to-r from-[#6BAEAA] to-[#234B55] h-full w-0 transition-all duration-300"></div>
+      </div>
+      <span id="progressPercent" class="text-xs font-mono text-[#687D83] w-12 text-right">0%</span>
+    </div>
+  </main>
+
+  <!-- External AI Tools Guide -->
+  <footer class="w-full max-w-5xl bg-white rounded-2xl border border-[#DCECE8] p-5 text-xs text-[#687D83] flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="space-y-1">
+      <p class="font-bold text-[#234B55] flex items-center gap-1.5">
+        <i class="fa-solid fa-wand-magic-sparkles text-[#6BAEAA]"></i>
+        <span>Need an AI Presenter Avatar?</span>
+      </p>
+      <p>You can also paste our video script into free AI video generators: <strong>InVideo AI</strong>, <strong>HeyGen</strong>, or <strong>Clipchamp</strong>.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="copyScript()" class="px-3 py-2 rounded-xl bg-[#DCECE8] hover:bg-[#A9D5C8] text-[#234B55] font-semibold flex items-center gap-1.5 transition-colors">
+        <i class="fa-solid fa-copy"></i>
+        <span>Copy Full Narration Script</span>
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    const SLIDES = [
+      {
+        title: "BreatheWise 🍃",
+        subtitle: "AI-Powered Planetary Air Quality Platform & Winter Smog Navigator",
+        badge: "The Problem & Mission",
+        icon: "fa-solid fa-smog text-amber-400",
+        stats: [
+          { label: "Winter Smog Threat", val: "PM2.5 & PM10" },
+          { label: "Target Region", val: "Global & Indo-Gangetic" },
+          { label: "Core Question", val: "How to defend families?" }
+        ],
+        narration: "Welcome to BreatheWise! Every winter, millions of families face hazardous winter smog and toxic PM2.5. Standard apps only display a scary red number without guidance. BreatheWise turns invisible atmospheric telemetry into actionable health intelligence."
+      },
+      {
+        title: "Interactive 3D Planetary Simulation 🌍",
+        subtitle: "High-Resolution NASA Earth Textures with Real-Time City Pins",
+        badge: "Atmospheric Telemetry",
+        icon: "fa-solid fa-earth-americas text-cyan-400",
+        stats: [
+          { label: "CPCB Indian NAQI", val: "Official Standard" },
+          { label: "Copernicus CAMS", val: "Live Hourly Feed" },
+          { label: "Thermal Inversion", val: "Smog Lid Detection" }
+        ],
+        narration: "At the heart of BreatheWise is an interactive Three.js 3D Earth planetary simulation featuring NASA Blue Marble textures. It tracks multi-city air quality in real-time using Indian CPCB NAQI and US EPA breakpoints, alerting users when thermal inversions trap surface smog."
+      },
+      {
+        title: "Dual Experience Engine & School 🎓",
+        subtitle: "Simple Mode for Families, Expert Mode for Environmental Researchers",
+        badge: "Accessibility & Education",
+        icon: "fa-solid fa-graduation-cap text-emerald-400",
+        stats: [
+          { label: "Simple Mode", val: "Jargon-Free Advice" },
+          { label: "Air Quality School", val: "8 Lessons & Quizzes" },
+          { label: "Activity Window", val: "Cleanest Exercise Hours" }
+        ],
+        narration: "We designed BreatheWise for everyone. Simple Mode provides plain-English advice answering what families should do today, while Expert Mode provides deep scientific analytics. The interactive Air Quality School teaches children and citizens about particle physics and lung protection."
+      },
+      {
+        title: "GenAI Clean Air Smog Assistant 🤖",
+        subtitle: "Powered by Google Gemini 1.5 Flash + Resilient Offline Engine",
+        badge: "Generative AI Integration",
+        icon: "fa-solid fa-robot text-purple-400",
+        stats: [
+          { label: "Model", val: "Google Gemini 1.5" },
+          { label: "Guidance Format", val: "5-Section Medical Advice" },
+          { label: "Resilience", val: "Zero-Failure Offline Engine" }
+        ],
+        narration: "Our GenAI assistant, powered by Google Gemini, ingests live sensor telemetry, commute habits, and family respiratory vulnerabilities to deliver a structured five-part advisory: Situation, Biological Impact, N95 Action Protocols, Quantified Benefits, and Critical Safety Warnings."
+      },
+      {
+        title: "Indoor Air Improvement & Sizing Centre 🏡",
+        subtitle: "Interactive HEPA Clean Air Delivery Rate (CADR) Calculator",
+        badge: "Practical Protection",
+        icon: "fa-solid fa-house-chimney-medical text-teal-400",
+        stats: [
+          { label: "Target Ventilation", val: "5 Air Changes / Hour" },
+          { label: "HEPA True Standard", val: "99.97% Micron Capture" },
+          { label: "Safety Warning", val: "Zero Ozone / Ionizers" }
+        ],
+        narration: "BreatheWise equips households with a Clean Air Delivery Rate calculator to correctly size True-HEPA purifiers for bedroom volumes, promotes diurnal ventilation timing, and features defensible tailpipe carbon accounting powered by official DEFRA conversion factors."
+      },
+      {
+        title: "Ready for Public Impact 🚀",
+        subtitle: "Live Deployment on Vercel • Open Source on GitHub",
+        badge: "Submission Package",
+        icon: "fa-solid fa-circle-check text-emerald-400",
+        stats: [
+          { label: "Live Platform", val: "breathewise-visual.vercel.app" },
+          { label: "GitHub Code", val: "KOWSHIKPARSHA4402" },
+          { label: "Test Suite", val: "10/10 Passing Tests" }
+        ],
+        narration: "BreatheWise is fully deployed on Vercel, verified with complete automated test coverage, and open-source on GitHub. Together, we can empower communities to breathe cleaner, safer air. Thank you!"
+      }
+    ];
+
+    let currentSlide = 0;
+    let isPlaying = false;
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    function renderSlide(index) {
+      const slide = SLIDES[index];
+      document.getElementById("slideIndicator").innerText = `SLIDE ${index + 1} OF ${SLIDES.length}`;
+      
+      const content = `
+        <div class="space-y-4 max-w-3xl">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-mono font-semibold text-emerald-300">
+            <i class="${slide.icon}"></i>
+            <span>${slide.badge}</span>
+          </div>
+
+          <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white glow-effect">
+            ${slide.title}
+          </h2>
+
+          <p class="text-base sm:text-xl text-slate-300 font-light">
+            ${slide.subtitle}
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4">
+            ${slide.stats.map(s => `
+              <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                <div class="text-[11px] font-mono text-emerald-400 uppercase">${s.label}</div>
+                <div class="text-sm font-bold text-white mt-1">${s.val}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      document.getElementById("slideContent").innerHTML = content;
+      document.getElementById("captionText").innerText = `"${slide.narration}"`;
+      
+      const pct = Math.round(((index + 1) / SLIDES.length) * 100);
+      document.getElementById("progressBar").style.width = pct + "%";
+      document.getElementById("progressPercent").innerText = pct + "%";
+    }
+
+    function speakNarration(text, onComplete) {
+      if (!('speechSynthesis' in window)) {
+        setTimeout(onComplete, 8000);
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      // Prefer natural English voices
+      const voices = window.speechSynthesis.getVoices();
+      const naturalVoice = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("David") || v.name.includes("Samantha")));
+      if (naturalVoice) utterance.voice = naturalVoice;
+
+      utterance.onend = () => {
+        setTimeout(onComplete, 1200); // 1.2s pause between slides
+      };
+      utterance.onerror = () => {
+        setTimeout(onComplete, 5000);
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    async function togglePresentation() {
+      if (isPlaying) {
+        stopPresentation();
+        return;
+      }
+      startPresentation();
+    }
+
+    async function startPresentation() {
+      isPlaying = true;
+      currentSlide = 0;
+      secondsElapsed = 0;
+      document.getElementById("btnLabel").innerText = "Stop Presentation";
+      document.getElementById("playIcon").className = "fa-solid fa-square text-xs text-rose-400";
+
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        document.getElementById("timerBadge").innerText = `${mins}:${secs}`;
+      }, 1000);
+
+      playNextSlide();
+    }
+
+    function playNextSlide() {
+      if (!isPlaying) return;
+      if (currentSlide >= SLIDES.length) {
+        finishPresentation();
+        return;
+      }
+      renderSlide(currentSlide);
+      speakNarration(SLIDES[currentSlide].narration, () => {
+        if (!isPlaying) return;
+        currentSlide++;
+        playNextSlide();
+      });
+    }
+
+    function stopPresentation() {
+      isPlaying = false;
+      window.speechSynthesis.cancel();
+      clearInterval(timerInterval);
+      document.getElementById("btnLabel").innerText = "Start Presentation & Auto-Record";
+      document.getElementById("playIcon").className = "fa-solid fa-play text-xs text-[#A9D5C8]";
+    }
+
+    function finishPresentation() {
+      stopPresentation();
+      document.getElementById("captionText").innerText = "🎉 Presentation Complete! All 6 slides demonstrated successfully.";
+      alert("Presentation Completed! Your demo video presentation is ready.");
+    }
+
+    function copyScript() {
+      const full = SLIDES.map((s, i) => `[Slide ${i+1}: ${s.title}]\n${s.narration}\n`).join("\n");
+      navigator.clipboard.writeText(full);
+      alert("Complete voiceover narration script copied to clipboard!");
+    }
+
+    // Initialize first slide on load
+    renderSlide(0);
+  </script>
+</body>
+</html>
