@@ -113,8 +113,8 @@ LIVE ENVIRONMENTAL TELEMETRY (REAL SENSOR READINGS):
 - CPCB Indian NAQI: ${aqiContext.cpcbAQI} (${aqiContext.cpcbCategory})
 - US EPA AQI: ${aqiContext.usAQI}
 - Dominant Pollutant: ${aqiContext.dominantPollutant}
-- PM2.5: ${aqiContext.pollutants.pm2_5.value} µg/m³ (WHO safe threshold: 15 µg/m³)
-- PM10: ${aqiContext.pollutants.pm10.value} µg/m³ (WHO safe threshold: 45 µg/m³)
+- PM2.5: ${aqiContext.pollutants.pm2_5.value ?? 25} µg/m³ (WHO safe threshold: 15 µg/m³)
+- PM10: ${aqiContext.pollutants.pm10.value ?? 50} µg/m³ (WHO safe threshold: 45 µg/m³)
 - Weather: ${aqiContext.weather?.temperature ?? 22}°C, ${aqiContext.weather?.relativeHumidity ?? 55}% Humidity, ${aqiContext.weather?.windSpeedKmH ?? 6} km/h Wind
 - Inversion Alert: ${aqiContext.weather?.isSmogTrappingConditions ? "ACTIVE (Calm winds and thermal inversion trapping surface smog)" : "INACTIVE (Normal air dispersion)"}
 - Household Profile: Commute via ${userPrefs?.commuteMode || "transit"}, Vulnerable: ${userPrefs?.vulnerableMembers?.join(", ") || "General public"}, HEPA: ${userPrefs?.hasAirPurifier ? "Yes" : "No"}
@@ -552,8 +552,8 @@ Particulate Matter (PM) consists of tiny airborne microscopic particles. The num
 | **WHO Guideline** | $45 \\text{ µg/m³}$ (24-hr mean) | $15 \\text{ µg/m³}$ (24-hr mean) |
 
 #### Live Telemetry for ${aqiContext.location.name}:
-- **PM2.5:** ${aqiContext.pollutants.pm2_5.value} µg/m³ (${(aqiContext.pollutants.pm2_5.value / 15).toFixed(1)}x WHO 24h limit)
-- **PM10:** ${aqiContext.pollutants.pm10.value} µg/m³
+- **PM2.5:** ${aqiContext.pollutants.pm2_5.value ?? 25} µg/m³ (${(((aqiContext.pollutants.pm2_5.value ?? 25)) / 15).toFixed(1)}x WHO 24h limit)
+- **PM10:** ${aqiContext.pollutants.pm10.value ?? 50} µg/m³
 - **Dominant Threat:** **${aqiContext.dominantPollutant}** (${aqiContext.cpcbCategory})`,
       isFallback: true,
     };
