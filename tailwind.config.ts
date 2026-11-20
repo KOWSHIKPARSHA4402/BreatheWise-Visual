@@ -13,23 +13,65 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        freshWhite: "#F4F8F6",
+        mistGreen: {
+          DEFAULT: "#DCECE8",
+          50: "#F7FAF9",
+          100: "#EEF6F3",
+          200: "#DCECE8",
+          300: "#C4DFD8",
+          400: "#A9D5C8",
+        },
+        seafoam: {
+          DEFAULT: "#A9D5C8",
+          light: "#C5E4DB",
+          dark: "#79BFAE",
+        },
+        oceanTeal: {
+          DEFAULT: "#6BAEAA",
+          light: "#8BC4C0",
+          dark: "#4B9490",
+        },
+        deepTeal: {
+          DEFAULT: "#234B55",
+          light: "#2E5F6C",
+          dark: "#1A373E",
+          900: "#13272C",
+        },
+        softAmber: {
+          DEFAULT: "#E9B978",
+          light: "#F2CE9D",
+          dark: "#D69F54",
+        },
+        mutedCoral: {
+          DEFAULT: "#D98E83",
+          light: "#E6ABA1",
+          dark: "#C67165",
+        },
+        softSlate: {
+          DEFAULT: "#687D83",
+          light: "#86999F",
+          dark: "#4E5F64",
+        },
         aqi: {
-          good: "#10b981",         // 0-50 Green
-          satisfactory: "#84cc16", // 51-100 Light Green
-          moderate: "#eab308",     // 101-200 Yellow/Amber
-          poor: "#f97316",         // 201-300 Orange
-          verypoor: "#ef4444",     // 301-400 Red
-          severe: "#7e22ce",       // 401-500 Purple/Maroon
+          good: "#4A9E86",
+          satisfactory: "#6BAEAA",
+          moderate: "#E9B978",
+          poor: "#E0937A",
+          verypoor: "#D98E83",
+          severe: "#B85450",
         },
         brand: {
-          50: "#f0fdf4",
-          100: "#dcfce7",
-          200: "#bbf7d0",
-          500: "#10b981",
-          600: "#059669",
-          700: "#047857",
-          800: "#065f46",
-          900: "#064e3b",
+          50: "#F4F8F6",
+          100: "#DCECE8",
+          200: "#A9D5C8",
+          300: "#8BC4C0",
+          400: "#6BAEAA",
+          500: "#234B55",
+          600: "#1E414A",
+          700: "#17333B",
+          800: "#12272C",
+          900: "#0D1B1E",
         },
       },
       fontFamily: {

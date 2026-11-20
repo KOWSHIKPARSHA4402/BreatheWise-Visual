@@ -51,48 +51,48 @@ export default function SettingsView() {
   return (
     <div className="space-y-8 max-w-4xl">
       {/* Top Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-sm relative overflow-hidden space-y-2">
+      <div className="p-6 sm:p-8 rounded-3xl liquid-glass-dark glow-card-dark text-white relative overflow-hidden space-y-2">
         <div className="flex items-center gap-2">
-          <span className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+          <span className="p-1.5 rounded-lg bg-[#6BAEAA]/20 text-[#A9D5C8]">
             <Settings className="w-4 h-4" />
           </span>
-          <span className="text-xs font-mono uppercase font-semibold tracking-wider text-emerald-400">
+          <span className="text-xs font-mono uppercase font-semibold tracking-wider text-[#A9D5C8]">
             System Preferences
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
           Settings &amp; Hackathon Demo Controls
         </h1>
-        <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#DCECE8]/90 font-light leading-relaxed">
           Configure default monitoring stations, personalize household profiles, or simulate specific winter smog conditions for hackathon demonstrations.
         </p>
       </div>
 
       {/* 1. Hackathon Demonstration Simulator Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-purple-50/50 dark:bg-purple-950/20 border-2 border-purple-200 dark:border-purple-800/80 space-y-5">
-        <div className="flex items-center justify-between border-b border-purple-200/60 dark:border-purple-800/60 pb-3">
+      <div className="p-6 sm:p-8 rounded-3xl liquid-glass glow-card space-y-5">
+        <div className="flex items-center justify-between border-b border-[#DCECE8] pb-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+            <Sparkles className="w-5 h-5 text-[#6BAEAA]" />
+            <h2 className="text-base font-bold text-[#234B55]">
               Hackathon Judge Demonstration Scenarios
             </h2>
           </div>
-          <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-full bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-200">
+          <span className="text-[10px] font-mono uppercase font-bold px-2.5 py-0.5 rounded-full bg-[#DCECE8] text-[#234B55]">
             Live Testing
           </span>
         </div>
 
-        <p className="text-xs text-slate-600 dark:text-slate-300 font-light leading-relaxed">
+        <p className="text-xs text-[#687D83] font-light leading-relaxed">
           Test how the entire platform (AI Assistant, Clean Air Planner, Green Choices, and Health Advisories) adapts dynamically to different atmospheric pollution tiers.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             onClick={() => handleSimulate("severe")}
-            className={`p-4 rounded-2xl border text-left transition-all ${
+            className={`p-4 rounded-2xl border text-left transition-all glow-btn ${
               activeScenario === "severe"
-                ? "bg-purple-700 text-white border-purple-700 shadow-md"
-                : "bg-white dark:bg-slate-900 border-purple-200 dark:border-purple-800 hover:border-purple-500 text-slate-900 dark:text-white"
+                ? "bg-[#B85450] text-white border-[#B85450] shadow-md glow-selected"
+                : "bg-white/70 border-[#DCECE8] hover:border-[#B85450] text-[#234B55]"
             }`}
           >
             <div className="text-[10px] font-mono uppercase font-bold opacity-80">Scenario 1</div>
@@ -104,10 +104,10 @@ export default function SettingsView() {
 
           <button
             onClick={() => handleSimulate("moderate")}
-            className={`p-4 rounded-2xl border text-left transition-all ${
+            className={`p-4 rounded-2xl border text-left transition-all glow-btn ${
               activeScenario === "moderate"
-                ? "bg-amber-600 text-white border-amber-600 shadow-md"
-                : "bg-white dark:bg-slate-900 border-purple-200 dark:border-purple-800 hover:border-amber-500 text-slate-900 dark:text-white"
+                ? "bg-[#E9B978] text-[#234B55] border-[#E9B978] font-bold shadow-md glow-selected"
+                : "bg-white/70 border-[#DCECE8] hover:border-[#E9B978] text-[#234B55]"
             }`}
           >
             <div className="text-[10px] font-mono uppercase font-bold opacity-80">Scenario 2</div>
@@ -119,10 +119,10 @@ export default function SettingsView() {
 
           <button
             onClick={() => handleSimulate("good")}
-            className={`p-4 rounded-2xl border text-left transition-all ${
+            className={`p-4 rounded-2xl border text-left transition-all glow-btn ${
               activeScenario === "good"
-                ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
-                : "bg-white dark:bg-slate-900 border-purple-200 dark:border-purple-800 hover:border-emerald-500 text-slate-900 dark:text-white"
+                ? "bg-[#4A9E86] text-white border-[#4A9E86] shadow-md glow-selected"
+                : "bg-white/70 border-[#DCECE8] hover:border-[#4A9E86] text-[#234B55]"
             }`}
           >
             <div className="text-[10px] font-mono uppercase font-bold opacity-80">Scenario 3</div>
@@ -135,12 +135,12 @@ export default function SettingsView() {
 
         {demoMode && (
           <div className="flex items-center justify-between pt-2">
-            <span className="text-xs font-mono text-purple-700 dark:text-purple-300">
+            <span className="text-xs font-mono text-[#234B55] font-semibold">
               Simulated {activeScenario?.toUpperCase()} mode is active.
             </span>
             <button
               onClick={handleResetLive}
-              className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 flex items-center gap-1.5 shadow-sm"
+              className="px-3 py-1.5 rounded-xl bg-white/70 border border-[#DCECE8] text-xs font-semibold text-[#234B55] hover:bg-[#DCECE8] flex items-center gap-1.5 shadow-sm glow-btn"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Restore Live Open-Meteo Feed</span>
@@ -150,8 +150,8 @@ export default function SettingsView() {
       </div>
 
       {/* 2. Default Location Preset */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white">
+      <div className="p-6 sm:p-8 rounded-3xl liquid-glass glow-card space-y-4">
+        <h2 className="text-base font-bold text-[#234B55]">
           Default Monitoring Location
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -159,10 +159,10 @@ export default function SettingsView() {
             <button
               key={city.name}
               onClick={() => setLocation(city)}
-              className={`p-3 rounded-2xl border text-left font-medium text-xs transition-all ${
+              className={`p-3 rounded-2xl border text-left font-medium text-xs transition-all glow-btn ${
                 location.name === city.name
-                  ? "bg-emerald-500 text-white border-emerald-500 font-bold shadow-sm"
-                  : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-emerald-500"
+                  ? "bg-[#234B55] text-white border-[#234B55] font-bold shadow-sm glow-selected"
+                  : "bg-white/60 border-[#DCECE8] text-[#234B55] hover:border-[#6BAEAA]"
               }`}
             >
               <div className="truncate">{city.name}</div>
@@ -173,13 +173,13 @@ export default function SettingsView() {
       </div>
 
       {/* 3. Household Health Profile */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white">
+      <div className="p-6 sm:p-8 rounded-3xl liquid-glass glow-card space-y-4">
+        <h2 className="text-base font-bold text-[#234B55]">
           Household Size &amp; Vulnerable Members
         </h2>
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <label className="flex items-center gap-3 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 cursor-pointer">
+            <label className="flex items-center gap-3 p-3.5 rounded-2xl border border-[#DCECE8] hover:bg-[#F4F8F6] cursor-pointer text-[#234B55]">
               <input
                 type="checkbox"
                 checked={userPrefs.vulnerableMembers.includes("infants_children")}
@@ -189,14 +189,14 @@ export default function SettingsView() {
                     : userPrefs.vulnerableMembers.filter((m) => m !== "infants_children");
                   updateUserPrefs({ vulnerableMembers: updated });
                 }}
-                className="w-4 h-4 text-emerald-600 rounded"
+                className="w-4 h-4 accent-[#234B55] rounded"
               />
-              <span className="font-medium text-slate-800 dark:text-slate-200">
+              <span className="font-medium">
                 Children / Infants in Household
               </span>
             </label>
 
-            <label className="flex items-center gap-3 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 cursor-pointer">
+            <label className="flex items-center gap-3 p-3.5 rounded-2xl border border-[#DCECE8] hover:bg-[#F4F8F6] cursor-pointer text-[#234B55]">
               <input
                 type="checkbox"
                 checked={userPrefs.vulnerableMembers.includes("elderly")}
@@ -206,14 +206,14 @@ export default function SettingsView() {
                     : userPrefs.vulnerableMembers.filter((m) => m !== "elderly");
                   updateUserPrefs({ vulnerableMembers: updated });
                 }}
-                className="w-4 h-4 text-emerald-600 rounded"
+                className="w-4 h-4 accent-[#234B55] rounded"
               />
-              <span className="font-medium text-slate-800 dark:text-slate-200">
+              <span className="font-medium">
                 Seniors / Elderly (65+) in Household
               </span>
             </label>
 
-            <label className="flex items-center gap-3 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 cursor-pointer">
+            <label className="flex items-center gap-3 p-3.5 rounded-2xl border border-[#DCECE8] hover:bg-[#F4F8F6] cursor-pointer text-[#234B55]">
               <input
                 type="checkbox"
                 checked={userPrefs.vulnerableMembers.includes("asthma_respiratory")}
@@ -223,21 +223,21 @@ export default function SettingsView() {
                     : userPrefs.vulnerableMembers.filter((m) => m !== "asthma_respiratory");
                   updateUserPrefs({ vulnerableMembers: updated });
                 }}
-                className="w-4 h-4 text-emerald-600 rounded"
+                className="w-4 h-4 accent-[#234B55] rounded"
               />
-              <span className="font-medium text-slate-800 dark:text-slate-200">
+              <span className="font-medium">
                 Asthma, COPD, or Bronchial Sensitivity
               </span>
             </label>
 
-            <label className="flex items-center gap-3 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 cursor-pointer">
+            <label className="flex items-center gap-3 p-3.5 rounded-2xl border border-[#DCECE8] hover:bg-[#F4F8F6] cursor-pointer text-[#234B55]">
               <input
                 type="checkbox"
                 checked={userPrefs.hasAirPurifier}
                 onChange={(e) => updateUserPrefs({ hasAirPurifier: e.target.checked })}
-                className="w-4 h-4 text-emerald-600 rounded"
+                className="w-4 h-4 accent-[#234B55] rounded"
               />
-              <span className="font-medium text-slate-800 dark:text-slate-200">
+              <span className="font-medium">
                 True-HEPA Air Purifier Available
               </span>
             </label>
@@ -246,21 +246,21 @@ export default function SettingsView() {
       </div>
 
       {/* 4. Privacy & Data Reset */}
-      <div className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
+      <div className="p-6 rounded-3xl bg-[#F4F8F6] border border-[#DCECE8] flex items-center justify-between gap-4">
         <div>
-          <h3 className="font-bold text-slate-900 dark:text-white text-sm">
+          <h3 className="font-bold text-[#234B55] text-sm">
             Reset Stored Data &amp; Local Preferences
           </h3>
-          <p className="text-xs text-slate-500 font-light">
+          <p className="text-xs text-[#687D83] font-light">
             All user data is stored strictly in your browser&apos;s localStorage; no personal tracking occurs.
           </p>
         </div>
         <button
           onClick={handleClearData}
-          className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 hover:bg-red-50 text-xs font-semibold text-red-600 dark:text-red-400 transition-colors shrink-0"
+          className="px-4 py-2 rounded-xl bg-white border border-[#D98E83]/60 hover:bg-[#D98E83]/10 text-xs font-semibold text-[#B85450] transition-colors shrink-0"
         >
           {clearedNotice ? (
-            <span className="flex items-center gap-1 text-emerald-600">
+            <span className="flex items-center gap-1 text-[#4A9E86]">
               <Check className="w-3.5 h-3.5" />
               <span>Reset Clean</span>
             </span>
@@ -271,9 +271,9 @@ export default function SettingsView() {
       </div>
 
       {/* Submission Specs Badge */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-500 flex flex-wrap items-center justify-between gap-2">
-        <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
-          <ShieldCheck className="w-4 h-4" />
+      <div className="p-4 rounded-2xl bg-white border border-[#DCECE8] text-xs font-mono text-[#687D83] flex flex-wrap items-center justify-between gap-2">
+        <span className="flex items-center gap-1.5 text-[#234B55] font-bold">
+          <ShieldCheck className="w-4 h-4 text-[#4A9E86]" />
           <span>Hack2Skill PromptWars Challenge 6 Verified</span>
         </span>
         <span>BreatheWise Architecture: Next.js App Router + Google Gemini</span>

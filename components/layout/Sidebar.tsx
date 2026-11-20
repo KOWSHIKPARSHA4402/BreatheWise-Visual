@@ -72,32 +72,32 @@ export default function Sidebar({ isCollapsed: controlledCollapsed, onToggleColl
 
   return (
     <aside
-      className={`hidden lg:flex flex-col border-r border-slate-800 bg-[#0d1424] text-slate-300 transition-all duration-300 ease-in-out shrink-0 select-none z-30 ${
+      className={`hidden lg:flex flex-col border-r border-[#DCECE8] bg-white text-[#234B55] transition-all duration-300 ease-in-out shrink-0 select-none z-30 shadow-[1px_0_4px_rgba(35,75,85,0.03)] ${
         isCollapsed ? "w-20 p-3" : "w-64 p-4"
       }`}
     >
       {/* Top Header: Logo & Collapse Button */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4">
+      <div className="flex items-center justify-between pb-4 border-b border-[#DCECE8] mb-4">
         <Link href="/" className="flex items-center gap-2.5 overflow-hidden group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#234B55] to-[#6BAEAA] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform shrink-0">
             <Wind className="w-5 h-5" />
           </div>
           {!isCollapsed && (
             <div className="transition-opacity duration-200">
-              <div className="font-bold text-base tracking-tight text-white flex items-center gap-1.5">
+              <div className="font-bold text-base tracking-tight text-[#234B55] flex items-center gap-1.5">
                 <span>BreatheWise</span>
-                <span className="text-[9px] uppercase font-mono px-1 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold">
+                <span className="text-[9px] uppercase font-mono px-1 py-0.2 rounded bg-[#DCECE8] text-[#234B55] border border-[#A9D5C8] font-bold">
                   AI
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-medium">Urban Smog Platform</p>
+              <p className="text-[11px] text-[#687D83] font-medium">Environmental Platform</p>
             </div>
           )}
         </Link>
 
         <button
           onClick={handleToggle}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+          className="p-1.5 rounded-lg text-[#687D83] hover:text-[#234B55] hover:bg-[#DCECE8]/60 transition-colors"
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
@@ -107,15 +107,15 @@ export default function Sidebar({ isCollapsed: controlledCollapsed, onToggleColl
 
       {/* Real-time Location Mini-Card (when expanded) */}
       {!isCollapsed && airQuality && (
-        <div className="mb-4 p-3 rounded-xl bg-[#131d31] border border-slate-800 space-y-1">
-          <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
-            <span className="truncate max-w-[120px] font-semibold text-slate-200">{location.name}</span>
+        <div className="mb-4 p-3 rounded-xl bg-[#F4F8F6] border border-[#DCECE8] space-y-1">
+          <div className="flex items-center justify-between text-[11px] text-[#687D83] font-mono">
+            <span className="truncate max-w-[120px] font-semibold text-[#234B55]">{location.name}</span>
             <span>{airQuality.cpcbCategory}</span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-xl font-black font-mono text-white">{airQuality.cpcbAQI}</span>
-              <span className="text-[10px] font-mono text-slate-400 uppercase">AQI</span>
+              <span className="text-xl font-black font-mono text-[#234B55]">{airQuality.cpcbAQI}</span>
+              <span className="text-[10px] font-mono text-[#687D83] uppercase">AQI</span>
             </div>
             <div
               className="w-2.5 h-2.5 rounded-full animate-pulse shadow-sm"
@@ -139,14 +139,14 @@ export default function Sidebar({ isCollapsed: controlledCollapsed, onToggleColl
                 isCollapsed ? "justify-center p-3" : "justify-between px-3.5 py-2.5"
               } ${
                 isActive
-                  ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-sm"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                  ? "bg-[#DCECE8] text-[#234B55] font-bold border border-[#A9D5C8] shadow-sm"
+                  : "text-[#687D83] hover:text-[#234B55] hover:bg-[#F4F8F6]"
               }`}
             >
               <div className="flex items-center gap-3">
                 <Icon
                   className={`w-4 h-4 shrink-0 transition-transform ${
-                    isActive ? "text-emerald-400 scale-110" : "text-slate-400 group-hover:text-slate-200"
+                    isActive ? "text-[#234B55] scale-110" : "text-[#687D83] group-hover:text-[#234B55]"
                   }`}
                 />
                 {!isCollapsed && <span className="truncate">{item.name}</span>}
@@ -156,8 +156,8 @@ export default function Sidebar({ isCollapsed: controlledCollapsed, onToggleColl
                 <span
                   className={`text-[9px] font-mono uppercase px-1.5 py-0.5 rounded font-bold ${
                     isActive
-                      ? "bg-emerald-400/20 text-emerald-300 border border-emerald-500/40"
-                      : "bg-slate-800 text-slate-400"
+                      ? "bg-[#234B55] text-white"
+                      : "bg-[#DCECE8] text-[#234B55]"
                   }`}
                 >
                   {item.badge}
@@ -170,21 +170,21 @@ export default function Sidebar({ isCollapsed: controlledCollapsed, onToggleColl
 
       {/* Bottom Smog Warning Alert (when severe and expanded) */}
       {!isCollapsed && airQuality && airQuality.cpcbAQI > 250 && (
-        <div className="mt-3 p-3 rounded-xl bg-purple-950/40 border border-purple-800/50 text-[11px] space-y-1">
-          <div className="flex items-center gap-1.5 font-bold text-purple-300 font-mono uppercase text-[10px]">
-            <ShieldAlert className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+        <div className="mt-3 p-3 rounded-xl bg-[#B85450]/10 border border-[#B85450]/30 text-[11px] space-y-1">
+          <div className="flex items-center gap-1.5 font-bold text-[#B85450] font-mono uppercase text-[10px]">
+            <ShieldAlert className="w-3.5 h-3.5 text-[#B85450] shrink-0" />
             <span>Severe Smog Alert</span>
           </div>
-          <p className="text-purple-200/80 leading-tight font-light">
+          <p className="text-[#72271E] leading-tight font-light">
             N95 mask recommended. Keep windows sealed.
           </p>
         </div>
       )}
 
       {/* Bottom Metadata */}
-      <div className={`pt-3 border-t border-slate-800/80 text-[10px] text-slate-400 font-mono mt-3 ${isCollapsed ? "text-center" : "flex justify-between items-center px-1"}`}>
-        {!isCollapsed && <span>Hack2Skill Ch 6</span>}
-        <span className="text-emerald-400 font-bold">v1.1</span>
+      <div className={`pt-3 border-t border-[#DCECE8] text-[10px] text-[#687D83] font-mono mt-3 ${isCollapsed ? "text-center" : "flex justify-between items-center px-1"}`}>
+        {!isCollapsed && <span>BreatheWise Platform</span>}
+        <span className="text-[#6BAEAA] font-bold">v1.2</span>
       </div>
     </aside>
   );

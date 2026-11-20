@@ -30,16 +30,15 @@ export default function AqiGauge({ aqi, category, dominantPollutant }: AqiGaugeP
         <svg viewBox="0 0 200 170" className="w-full h-full transform -rotate-90">
           <defs>
             <linearGradient id="gaugeTrackGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="20%" stopColor="#84cc16" />
-              <stop offset="40%" stopColor="#f59e0b" />
-              <stop offset="60%" stopColor="#f97316" />
-              <stop offset="80%" stopColor="#ef4444" />
-              <stop offset="100%" stopColor="#9333ea" />
+              <stop offset="0%" stopColor="#4A9E86" />
+              <stop offset="25%" stopColor="#6BAEAA" />
+              <stop offset="50%" stopColor="#E9B978" />
+              <stop offset="75%" stopColor="#D98E83" />
+              <stop offset="100%" stopColor="#B85450" />
             </linearGradient>
 
             <filter id="gaugeGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={theme.color} floodOpacity="0.5" />
+              <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor={theme.color} floodOpacity="0.4" />
             </filter>
           </defs>
 
@@ -49,7 +48,7 @@ export default function AqiGauge({ aqi, category, dominantPollutant }: AqiGaugeP
             cy="100"
             r={r}
             fill="none"
-            stroke="rgba(255, 255, 255, 0.08)"
+            stroke="rgba(104, 125, 131, 0.15)"
             strokeWidth="14"
             strokeDasharray={`${totalArc} 500`}
             strokeDashoffset="0"
@@ -76,12 +75,11 @@ export default function AqiGauge({ aqi, category, dominantPollutant }: AqiGaugeP
 
         {/* Center Numbers & Badge */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pt-6 text-center select-none pointer-events-none">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-semibold">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#687D83] font-semibold">
             CPCB NAQI
           </span>
           <span
-            className="text-4xl sm:text-5xl font-black font-mono tracking-tight text-white transition-all"
-            style={{ textShadow: `0 0 20px ${theme.color}40` }}
+            className="text-4xl sm:text-5xl font-black font-mono tracking-tight text-[#234B55] transition-all"
           >
             {aqi}
           </span>
@@ -91,18 +89,18 @@ export default function AqiGauge({ aqi, category, dominantPollutant }: AqiGaugeP
           >
             {category}
           </span>
-          <span className="text-[10px] text-slate-400 font-mono mt-1">
-            Primary: <strong className="text-slate-200">{dominantPollutant}</strong>
+          <span className="text-[10px] text-[#687D83] font-mono mt-1">
+            Primary: <strong className="text-[#234B55]">{dominantPollutant}</strong>
           </span>
         </div>
       </div>
 
       {/* Breakpoint legend underneath */}
-      <div className="w-full max-w-[220px] flex items-center justify-between text-[9px] font-mono text-slate-500 mt-1 px-1">
-        <span className="text-emerald-400 font-semibold">0 Good</span>
-        <span className="text-amber-400 font-semibold">100 Mod</span>
-        <span className="text-orange-400 font-semibold">200 Poor</span>
-        <span className="text-purple-400 font-semibold">400+ Sev</span>
+      <div className="w-full max-w-[220px] flex items-center justify-between text-[9px] font-mono text-[#687D83] mt-1 px-1">
+        <span className="text-[#4A9E86] font-semibold">0 Good</span>
+        <span className="text-[#E9B978] font-semibold">100 Mod</span>
+        <span className="text-[#D98E83] font-semibold">200 Poor</span>
+        <span className="text-[#B85450] font-semibold">400+ Sev</span>
       </div>
     </div>
   );

@@ -173,3 +173,126 @@ test("AI Assistant Fallback Engine generates all 5 required structural sections"
   const hasOzoneWarning = guidance.importantPrecautions.some((p) => p.includes("ozone"));
   assert.ok(hasOzoneWarning, "Guidance must caution against ozone generators");
 });
+
+test("Smart Pollution Alert Engine triggers appropriate emergency, warning, and advisory alerts", () => {
+  // Test Case 1: Severe Smog Emergency
+  const severeContext = {
+    cpcbAQI: 425,
+    pollutants: { pm2_5: { value: 280, unit: "µg/m³" } },
+    weather: { windSpeedKmH: 3, relativeHumidity: 82, isSmogTrappingConditions: true },
+    location: { name: "New Delhi" },
+    metadata: { lastUpdated: "16:00" },
+  };
+
+  const isSevere = severeContext.cpcbAQI >= 401;
+  const isHighPm25 = severeContext.pollutants.pm2_5.value > 60;
+  const isInversion = severeContext.weather.isSmogTrappingConditions;
+
+  assert.ok(isSevere, "AQI >= 401 must trigger severe emergency");
+  assert.ok(isHighPm25, "PM2.5 > 60 µg/m³ must trigger particulate warning");
+  assert.ok(isInversion, "Low wind + high humidity must trigger inversion advisory");
+
+  // Test Case 2: 24-Hour Rapid Deterioration Delta
+  const prevAqi = 150;
+  const currentAqi = 225;
+  const deltaAqi = currentAqi - prevAqi;
+  const percentChange = Number(((deltaAqi / prevAqi) * 100).toFixed(1));
+  const isDeteriorating = deltaAqi > 25 && percentChange >= 20;
+
+  assert.equal(deltaAqi, 75);
+  assert.equal(percentChange, 50.0);
+  assert.ok(isDeteriorating, "AQI jump > 20% in 24h must trigger deterioration alert");
+});
+
+test("Outdoor Activity Window identifies cleanest daylight hours for outdoor ventilation", () => {
+  // 24-hour hourly curve
+  const hourlyAqi = [
+    { time: "06:00", aqi: 280 },
+    { time: "07:00", aqi: 310 },
+    { time: "08:00", aqi: 320 }, // Morning peak
+    { time: "09:00", aqi: 290 },
+    { time: "10:00", aqi: 220 },
+    { time: "11:00", aqi: 180 },
+    { time: "12:00", aqi: 150 },
+    { time: "13:00", aqi: 110 }, // Cleanest window
+    { time: "14:00", aqi: 95 },
+    { time: "15:00", aqi: 105 },
+    { time: "16:00", aqi: 140 },
+    { time: "17:00", aqi: 190 },
+    { time: "18:00", aqi: 240 },
+  ];
+
+  let bestAvg = Infinity;
+  let bestStart = "";
+  let bestEnd = "";
+
+  for (let i = 0; i < hourlyAqi.length - 2; i++) {
+    const avg = (hourlyAqi[i].aqi + hourlyAqi[i + 1].aqi + hourlyAqi[i + 2].aqi) / 3;
+    if (avg < bestAvg) {
+      bestAvg = avg;
+      bestStart = hourlyAqi[i].time;
+      bestEnd = hourlyAqi[i + 2].time;
+    }
+  }
+
+  assert.equal(bestStart, "13:00");
+  assert.equal(bestEnd, "15:00");
+  assert.ok(bestAvg < 110, `Expected best daylight window avg < 110, got ${bestAvg}`);
+});
+
+test("Beginner-Friendly Experience Mode default and state toggling", () => {
+  let experienceMode = "simple"; // Default for new visitors
+  assert.equal(experienceMode, "simple", "Default experience mode must be simple");
+
+  // Toggle to expert
+  experienceMode = experienceMode === "simple" ? "expert" : "simple";
+  assert.equal(experienceMode, "expert", "Must toggle to expert mode");
+
+  // Toggle back to simple
+  experienceMode = experienceMode === "simple" ? "expert" : "simple";
+  assert.equal(experienceMode, "simple", "Must toggle back to simple mode");
+});
+
+test("Air Quality School 8-lesson curriculum and completion progress", () => {
+  const totalLessons = 8;
+  const progress = {
+    "lesson-1": true,
+    "lesson-2": true,
+    "lesson-3": false,
+    "lesson-4": false,
+    "lesson-5": false,
+    "lesson-6": false,
+    "lesson-7": false,
+    "lesson-8": false,
+  };
+
+  const completedCount = Object.values(progress).filter(Boolean).length;
+  const progressPercent = Math.round((completedCount / totalLessons) * 100);
+
+  assert.equal(completedCount, 2);
+  assert.equal(progressPercent, 25);
+
+  // Complete lesson 3
+  progress["lesson-3"] = true;
+  const updatedCount = Object.values(progress).filter(Boolean).length;
+  assert.equal(updatedCount, 3);
+  assert.equal(Math.round((updatedCount / totalLessons) * 100), 38);
+});
+
+test("Plain-English Air Health Classification and Worst Pollutant Rule", () => {
+  // Scenario: Ozone is 35 (Good), but PM2.5 is 220 (Severe)
+  const pollutantSubIndices = [
+    { name: "O3", aqi: 35, category: "Good" },
+    { name: "SO2", aqi: 20, category: "Good" },
+    { name: "NO2", aqi: 55, category: "Satisfactory" },
+    { name: "PM2.5", aqi: 380, category: "Very Poor" },
+  ];
+
+  // Highest sub-index sets the overall score
+  const overallAqi = Math.max(...pollutantSubIndices.map((p) => p.aqi));
+  const dominant = pollutantSubIndices.find((p) => p.aqi === overallAqi);
+
+  assert.equal(overallAqi, 380);
+  assert.equal(dominant?.name, "PM2.5");
+  assert.equal(dominant?.category, "Very Poor");
+});

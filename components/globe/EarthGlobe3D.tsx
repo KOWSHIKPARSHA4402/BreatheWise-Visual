@@ -2,8 +2,9 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
-import { Plus, Minus, RotateCcw, Info, ExternalLink, Wind, Droplets, Thermometer } from "lucide-react";
-import { LocationData, AirQualityData } from "@/lib/types";
+import { Plus, Minus, RotateCcw, Info, ExternalLink, Wind, Droplets, Thermometer, Search, Globe2, Sparkles } from "lucide-react";
+import { LocationData, AirQualityData, CityComparisonItem } from "@/lib/types";
+import { searchCities } from "@/lib/open-meteo";
 
 // Worldwide air quality hotspot pins
 export interface GlobeCityPin {
@@ -203,6 +204,7 @@ interface EarthGlobe3DProps {
   activeLocation?: LocationData;
   airQuality?: AirQualityData | null;
   onViewDetails?: () => void;
+  onExplainCity?: (city: GlobeCityPin) => void;
 }
 
 export default function EarthGlobe3D({
@@ -211,22 +213,111 @@ export default function EarthGlobe3D({
   activeLocation,
   airQuality,
   onViewDetails,
+  onExplainCity,
 }: EarthGlobe3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [citiesList, setCitiesList] = useState<GlobeCityPin[]>(WORLD_CITIES);
+  const citiesRef = useRef<GlobeCityPin[]>(WORLD_CITIES);
   const [internalSelectedCity, setInternalSelectedCity] = useState<GlobeCityPin>(
-    selectedCity || WORLD_CITIES[1] // Default to Jakarta / matching reference image
+    selectedCity || WORLD_CITIES[1] // Default to Jakarta
   );
   const [hoveredCity, setHoveredCity] = useState<GlobeCityPin | null>(null);
   const [projectedPins, setProjectedPins] = useState<
     { city: GlobeCityPin; x: number; y: number; visible: boolean }[]
   >([]);
+  const [webGlAvailable, setWebGlAvailable] = useState<boolean>(true);
+
+  // Search state for globe
+  const [globeSearchQuery, setGlobeSearchQuery] = useState("");
+  const [globeSearchResults, setGlobeSearchResults] = useState<LocationData[]>([]);
+  const [isGlobeSearching, setIsGlobeSearching] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Sync citiesRef when citiesList changes
+  useEffect(() => {
+    citiesRef.current = citiesList;
+  }, [citiesList]);
+
+  // Fetch live batch telemetry on mount to update pins with real-time CPCB measurements
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLivePins = async () => {
+      try {
+        const locationsToQuery: LocationData[] = WORLD_CITIES.map((c) => ({
+          name: c.name,
+          country: c.country,
+          latitude: c.lat,
+          longitude: c.lng,
+        }));
+
+        const res = await fetch("/api/air-quality/batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locations: locationsToQuery }),
+        });
+
+        if (!res.ok) return;
+        const liveItems: CityComparisonItem[] = await res.json();
+        if (!isMounted || !Array.isArray(liveItems)) return;
+
+        setCitiesList((prev) =>
+          prev.map((orig) => {
+            const match = liveItems.find(
+              (d) => d.location.name.toLowerCase() === orig.name.toLowerCase()
+            );
+            if (!match) return orig;
+
+            return {
+              ...orig,
+              aqi: match.cpcbAQI,
+              category: match.cpcbCategory,
+              dominantPollutant: match.dominantPollutant,
+              temp: match.weather?.temperature ?? orig.temp,
+              humidity: match.weather?.relativeHumidity ?? orig.humidity,
+              windSpeed: match.weather?.windSpeedKmH ?? orig.windSpeed,
+            };
+          })
+        );
+      } catch (err) {
+        console.warn("Could not sync live globe pins:", err);
+      }
+    };
+
+    fetchLivePins();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Search Cities on Globe handler
+  useEffect(() => {
+    if (!globeSearchQuery.trim() || globeSearchQuery.length < 2) {
+      setGlobeSearchResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsGlobeSearching(true);
+      try {
+        const results = await searchCities(globeSearchQuery);
+        setGlobeSearchResults(results);
+        setIsSearchOpen(true);
+      } catch (err) {
+        console.warn("Globe city search failed:", err);
+      } finally {
+        setIsGlobeSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [globeSearchQuery]);
 
   // Three.js instances stored in refs
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const globeGroupRef = useRef<THREE.Group | null>(null);
-  const earthMeshRef = useRef<THREE.Mesh | null>(null);
+  const cloudsMeshRef = useRef<THREE.Mesh | null>(null);
   const targetRotationRef = useRef<{ x: number; y: number }>({ x: 0.2, y: -1.8 });
   const isDraggingRef = useRef<boolean>(false);
   const autoRotateRef = useRef<boolean>(true);
@@ -238,7 +329,6 @@ export default function EarthGlobe3D({
     if (selectedCity) {
       setInternalSelectedCity(selectedCity);
     } else if (activeLocation && airQuality) {
-      // Create city pin from active location
       const matchedCity = WORLD_CITIES.find(
         (c) => c.name.toLowerCase() === activeLocation.name.toLowerCase()
       );
@@ -250,7 +340,6 @@ export default function EarthGlobe3D({
 
   // Rotate globe to face selected city
   const rotateToCity = useCallback((city: GlobeCityPin) => {
-    // Lat / Lng to Euler rotation
     const phi = (city.lat * Math.PI) / 180;
     const theta = (city.lng * Math.PI) / 180;
 
@@ -294,8 +383,27 @@ export default function EarthGlobe3D({
     const container = mountRef.current;
     if (!container) return;
 
+    // Check WebGL availability
+    try {
+      const testCanvas = document.createElement("canvas");
+      const gl = testCanvas.getContext("webgl") || testCanvas.getContext("experimental-webgl");
+      if (!gl) {
+        setWebGlAvailable(false);
+        return;
+      }
+    } catch {
+      setWebGlAvailable(false);
+      return;
+    }
+
     const width = container.clientWidth;
     const height = container.clientHeight;
+
+    // Check reduced motion preference
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      autoRotateRef.current = false;
+    }
 
     // Scene
     const scene = new THREE.Scene();
@@ -306,13 +414,23 @@ export default function EarthGlobe3D({
     camera.position.z = zoomLevelRef.current;
     cameraRef.current = camera;
 
-    // WebGL Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    rendererRef.current = renderer;
+    // WebGL Renderer with optimized settings
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      rendererRef.current = renderer;
+    } catch {
+      setWebGlAvailable(false);
+      return;
+    }
 
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
@@ -326,163 +444,187 @@ export default function EarthGlobe3D({
     globeGroup.rotation.x = targetRotationRef.current.x;
     globeGroup.rotation.y = targetRotationRef.current.y;
 
-    // ==========================================
-    // 1. Procedural Night Earth Canvas Texture
-    // ==========================================
-    const canvas = document.createElement("canvas");
-    canvas.width = 2048;
-    canvas.height = 1024;
-    const ctx = canvas.getContext("2d");
-
-    if (ctx) {
-      // Deep oceanic midnight gradient
-      const oceanGrad = ctx.createLinearGradient(0, 0, 0, 1024);
-      oceanGrad.addColorStop(0, "#030816");
-      oceanGrad.addColorStop(0.5, "#060f26");
-      oceanGrad.addColorStop(1, "#030816");
-      ctx.fillStyle = oceanGrad;
-      ctx.fillRect(0, 0, 2048, 1024);
-
-      // Subtle longitude & latitude coordinate grid
-      ctx.strokeStyle = "rgba(30, 58, 110, 0.22)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x <= 2048; x += 128) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, 1024);
-        ctx.stroke();
-      }
-      for (let y = 0; y <= 1024; y += 128) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(2048, y);
-        ctx.stroke();
-      }
-
-      // Draw Landmasses (vector styled continents)
-      ctx.fillStyle = "#0c1b38";
-      ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
-      ctx.lineWidth = 1.5;
-
-      const drawContinent = (points: [number, number][]) => {
-        ctx.beginPath();
-        const startX = ((points[0][1] + 180) / 360) * 2048;
-        const startY = ((90 - points[0][0]) / 180) * 1024;
-        ctx.moveTo(startX, startY);
-
-        for (let i = 1; i < points.length; i++) {
-          const px = ((points[i][1] + 180) / 360) * 2048;
-          const py = ((90 - points[i][0]) / 180) * 1024;
-          ctx.lineTo(px, py);
-        }
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-      };
-
-      // Eurasia
-      drawContinent([
-        [70, 30], [72, 70], [68, 120], [62, 160], [50, 140],
-        [38, 122], [22, 114], [10, 105], [12, 80], [25, 65],
-        [30, 48], [42, 28], [55, 10], [60, 20], [70, 30],
-      ]);
-
-      // Africa
-      drawContinent([
-        [35, -5], [37, 10], [30, 32], [12, 44], [-5, 40],
-        [-25, 32], [-35, 20], [-34, 18], [-10, 12], [5, 2],
-        [15, -16], [32, -10], [35, -5],
-      ]);
-
-      // North America
-      drawContinent([
-        [70, -160], [68, -130], [58, -95], [52, -60], [45, -65],
-        [30, -80], [25, -80], [18, -98], [25, -110], [38, -122],
-        [50, -125], [60, -140], [70, -160],
-      ]);
-
-      // South America
-      drawContinent([
-        [10, -75], [5, -52], [-10, -36], [-25, -48], [-45, -65],
-        [-55, -68], [-40, -72], [-18, -75], [-5, -80], [10, -75],
-      ]);
-
-      // Australia
-      drawContinent([
-        [-12, 130], [-15, 145], [-25, 152], [-38, 145], [-35, 115],
-        [-22, 114], [-15, 125], [-12, 130],
-      ]);
-
-      // Southeast Asia Islands / Indonesia archipelago
-      drawContinent([[5, 100], [2, 104], [-6, 106], [-8, 114], [-6, 110], [5, 100]]);
-      drawContinent([[-2, 110], [-4, 118], [-8, 120], [-5, 112], [-2, 110]]);
-
-      // ==========================================
-      // Add Glowing City Night Lights (Golden Nodes)
-      // ==========================================
-      const addCityLightCluster = (lat: number, lng: number, count: number, radius: number) => {
-        const cx = ((lng + 180) / 360) * 2048;
-        const cy = ((90 - lat) / 180) * 1024;
-
-        for (let i = 0; i < count; i++) {
-          const angle = Math.random() * Math.PI * 2;
-          const dist = Math.pow(Math.random(), 0.7) * radius;
-          const px = cx + Math.cos(angle) * dist;
-          const py = cy + Math.sin(angle) * dist;
-
-          const brightness = Math.random();
-          ctx.beginPath();
-          ctx.arc(px, py, 1.2 + Math.random() * 1.8, 0, Math.PI * 2);
-          if (brightness > 0.6) {
-            ctx.fillStyle = "rgba(254, 240, 138, 0.95)"; // bright golden yellow
-          } else if (brightness > 0.3) {
-            ctx.fillStyle = "rgba(245, 158, 11, 0.85)"; // warm amber
-          } else {
-            ctx.fillStyle = "rgba(234, 88, 12, 0.7)"; // deep orange
-          }
-          ctx.fill();
-        }
-      };
-
-      // Dense night light clusters matching real Earth night maps
-      addCityLightCluster(28.6, 77.2, 50, 28);   // Northern India / Delhi corridor
-      addCityLightCluster(19.0, 72.8, 40, 20);   // Western India / Mumbai
-      addCityLightCluster(13.0, 80.2, 30, 15);   // Southern India
-      addCityLightCluster(-6.2, 106.8, 45, 22);  // Java / Jakarta
-      addCityLightCluster(31.2, 121.5, 55, 30);  // Yangtze Delta / Shanghai
-      addCityLightCluster(22.3, 114.1, 40, 20);  // Pearl River Delta / Hong Kong
-      addCityLightCluster(35.6, 139.6, 50, 25);  // Tokyo / Kanto Plain
-      addCityLightCluster(25.2, 55.2, 35, 18);   // Dubai / UAE coast
-      addCityLightCluster(51.5, -0.1, 45, 25);   // London / UK
-      addCityLightCluster(48.8, 2.3, 40, 22);    // Paris
-      addCityLightCluster(40.7, -74.0, 50, 30);  // NY / Boston corridor
-      addCityLightCluster(34.0, -118.2, 40, 25); // California
-      addCityLightCluster(30.0, 31.2, 35, 20);   // Nile Delta / Cairo
-      addCityLightCluster(-26.2, 28.0, 30, 18);  // Johannesburg
-    }
-
-    const earthTexture = new THREE.CanvasTexture(canvas);
-    earthTexture.anisotropy = 8;
-
-    // Earth Sphere Geometry
     const earthRadius = 3.2;
+
+    // ==========================================
+    // 1. High-Resolution NASA Textures Loading
+    // ==========================================
+    const textureLoader = new THREE.TextureLoader();
+
+    // Day Texture
+    const dayTexture = textureLoader.load("/textures/earth/earth-blue-marble.jpg");
+    dayTexture.colorSpace = THREE.SRGBColorSpace;
+    dayTexture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+
+    // Night Texture (City Lights)
+    const nightTexture = textureLoader.load("/textures/earth/earth-night.jpg");
+    nightTexture.colorSpace = THREE.SRGBColorSpace;
+    nightTexture.anisotropy = 4;
+
+    // Normal Map (Mountain & Terrain Details)
+    const normalTexture = textureLoader.load("/textures/earth/earth-normal.jpg");
+    normalTexture.colorSpace = THREE.NoColorSpace;
+
+    // Specular Map (Ocean Reflection Mask)
+    const specularTexture = textureLoader.load("/textures/earth/earth-specular.jpg");
+    specularTexture.colorSpace = THREE.NoColorSpace;
+
+    // Clouds Texture
+    const cloudsTexture = textureLoader.load("/textures/earth/earth-clouds.png");
+    cloudsTexture.colorSpace = THREE.SRGBColorSpace;
+
+    // Sun Direction in World Space (Angled from upper-left to match celestial sunlight)
+    const sunDirection = new THREE.Vector3(-1.0, 0.45, 0.85).normalize();
+
+    // ==========================================
+    // 2. Realistic Earth Surface Custom Shader
+    // ==========================================
     const earthGeometry = new THREE.SphereGeometry(earthRadius, 64, 64);
-    const earthMaterial = new THREE.MeshPhongMaterial({
-      map: earthTexture,
-      bumpScale: 0.05,
-      specular: new THREE.Color(0x0a1e4a),
-      shininess: 15,
-      emissive: new THREE.Color(0x020713),
+    const earthShaderMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uDayMap: { value: dayTexture },
+        uNightMap: { value: nightTexture },
+        uNormalMap: { value: normalTexture },
+        uSpecularMap: { value: specularTexture },
+        uSunDirection: { value: sunDirection },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vWorldPosition;
+
+        void main() {
+          vUv = uv;
+          vNormal = normalize(normalMatrix * normal);
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPosition = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vWorldPosition;
+
+        uniform sampler2D uDayMap;
+        uniform sampler2D uNightMap;
+        uniform sampler2D uNormalMap;
+        uniform sampler2D uSpecularMap;
+        uniform vec3 uSunDirection;
+
+        void main() {
+          vec4 dayColor = texture2D(uDayMap, vUv);
+          vec4 nightColor = texture2D(uNightMap, vUv);
+          vec4 normalMapVal = texture2D(uNormalMap, vUv);
+          float specMask = texture2D(uSpecularMap, vUv).r;
+
+          // Surface normal perturbation from normal map
+          vec3 geomNormal = normalize(vNormal);
+          vec3 mapNormal = normalize(normalMapVal.xyz * 2.0 - 1.0);
+          vec3 finalNormal = normalize(mix(geomNormal, geomNormal + mapNormal * 0.35, 0.5));
+
+          // Sunlight calculation
+          float sunDot = dot(finalNormal, uSunDirection);
+
+          // Smooth day/night terminator transition
+          float dayFactor = smoothstep(-0.15, 0.22, sunDot);
+
+          // View vector for specular & Fresnel
+          vec3 viewDir = normalize(cameraPosition - vWorldPosition);
+
+          // Ocean specular highlight on day side
+          vec3 halfVec = normalize(uSunDirection + viewDir);
+          float specAngle = max(dot(finalNormal, halfVec), 0.0);
+          float specular = pow(specAngle, 32.0) * specMask * dayFactor * 0.65;
+          vec3 specColor = vec3(0.92, 0.96, 1.0) * specular;
+
+          // Day surface lighting (ambient + directional)
+          vec3 dayAmbient = vec3(0.08, 0.11, 0.15);
+          float diffuse = max(sunDot, 0.0);
+          vec3 dayLit = dayColor.rgb * (dayAmbient + vec3(1.12) * diffuse) + specColor;
+
+          // Night side: subtle space ambient + authentic NASA warm city lights
+          vec3 nightAmbient = dayColor.rgb * vec3(0.03, 0.04, 0.07);
+          vec3 cityLights = nightColor.rgb * vec3(1.3, 1.15, 0.9) * 1.4 * (1.0 - dayFactor);
+
+          // Subtle atmospheric limb brightening (Fresnel on edge)
+          float fresnel = 1.0 - max(dot(geomNormal, viewDir), 0.0);
+          float limbGlow = pow(fresnel, 3.8) * max(dot(geomNormal, uSunDirection), 0.0) * 0.4;
+          vec3 atmosphereLimb = vec3(0.35, 0.68, 0.98) * limbGlow;
+
+          // Blend day & night
+          vec3 finalColor = mix(nightAmbient + cityLights, dayLit, dayFactor) + atmosphereLimb;
+
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `,
     });
 
-    const earthMesh = new THREE.Mesh(earthGeometry, earthMaterial);
-    earthMeshRef.current = earthMesh;
+    const earthMesh = new THREE.Mesh(earthGeometry, earthShaderMaterial);
     globeGroup.add(earthMesh);
 
     // ==========================================
-    // 2. Atmospheric Cyan / Electric Blue Glow Halo
+    // 3. Separate Transparent Cloud Sphere Layer
     // ==========================================
-    const atmosphereGeometry = new THREE.SphereGeometry(earthRadius * 1.055, 64, 64);
+    const cloudsRadius = earthRadius * 1.012;
+    const cloudsGeometry = new THREE.SphereGeometry(cloudsRadius, 64, 64);
+    const cloudsMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uCloudsMap: { value: cloudsTexture },
+        uSunDirection: { value: sunDirection },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vWorldPosition;
+
+        void main() {
+          vUv = uv;
+          vNormal = normalize(normalMatrix * normal);
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPosition = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vWorldPosition;
+
+        uniform sampler2D uCloudsMap;
+        uniform vec3 uSunDirection;
+
+        void main() {
+          vec4 cloudSample = texture2D(uCloudsMap, vUv);
+          float cloudDensity = cloudSample.r;
+
+          // Illumination on clouds
+          vec3 norm = normalize(vNormal);
+          float sunDot = dot(norm, uSunDirection);
+          float dayFactor = smoothstep(-0.15, 0.25, sunDot);
+
+          // Clouds are softly sunlit on day side, faintly dimmed on night side
+          vec3 cloudLit = mix(vec3(0.08, 0.1, 0.14), vec3(1.0, 1.0, 1.0), dayFactor);
+
+          // Controlled cloud opacity to preserve continents underneath
+          float opacity = cloudDensity * mix(0.15, 0.42, dayFactor);
+
+          gl_FragColor = vec4(cloudLit, opacity);
+        }
+      `,
+      transparent: true,
+      blending: THREE.NormalBlending,
+      depthWrite: false,
+    });
+
+    const cloudsMesh = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+    cloudsMeshRef.current = cloudsMesh;
+    globeGroup.add(cloudsMesh);
+
+    // ==========================================
+    // 4. Atmospheric Blue Scattering Halo
+    // ==========================================
+    const atmosphereGeometry = new THREE.SphereGeometry(earthRadius * 1.12, 64, 64);
     const atmosphereMaterial = new THREE.ShaderMaterial({
       vertexShader: `
         varying vec3 vNormal;
@@ -494,21 +636,23 @@ export default function EarthGlobe3D({
       fragmentShader: `
         varying vec3 vNormal;
         void main() {
-          // Fresnel rim lighting
-          float intensity = pow(0.68 - dot(vNormal, vec3(0, 0, 1.0)), 2.6);
-          gl_FragColor = vec4(0.0, 0.85, 1.0, 1.0) * intensity * 1.4;
+          // Subtle celestial Rayleigh scattering
+          float intensity = pow(0.68 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.6);
+          // Soft cyan-blue atmosphere rim
+          gl_FragColor = vec4(0.24, 0.62, 0.94, 1.0) * intensity * 0.75;
         }
       `,
       blending: THREE.AdditiveBlending,
       side: THREE.BackSide,
       transparent: true,
+      depthWrite: false,
     });
 
     const atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
     globeGroup.add(atmosphereMesh);
 
-    // Subtle Inner Atmosphere Rim
-    const innerRimGeometry = new THREE.SphereGeometry(earthRadius * 1.008, 64, 64);
+    // Subtle Inner Atmosphere Rim on Globe Surface
+    const innerRimGeometry = new THREE.SphereGeometry(earthRadius * 1.018, 64, 64);
     const innerRimMaterial = new THREE.ShaderMaterial({
       vertexShader: `
         varying vec3 vNormal;
@@ -520,19 +664,20 @@ export default function EarthGlobe3D({
       fragmentShader: `
         varying vec3 vNormal;
         void main() {
-          float intensity = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.2);
-          gl_FragColor = vec4(0.2, 0.6, 1.0, 0.4) * intensity;
+          float intensity = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.4);
+          gl_FragColor = vec4(0.3, 0.72, 0.98, 0.35) * intensity;
         }
       `,
       blending: THREE.AdditiveBlending,
       side: THREE.FrontSide,
       transparent: true,
+      depthWrite: false,
     });
     const innerRimMesh = new THREE.Mesh(innerRimGeometry, innerRimMaterial);
     globeGroup.add(innerRimMesh);
 
     // ==========================================
-    // 3. 3D City Markers (Pins & Glowing Rings)
+    // 5. 3D City Markers (Pins & Clean Rings)
     // ==========================================
     const cityPinsGroup = new THREE.Group();
     globeGroup.add(cityPinsGroup);
@@ -545,29 +690,27 @@ export default function EarthGlobe3D({
       const z = earthRadius * Math.sin(phi) * Math.sin(theta);
       const y = earthRadius * Math.cos(phi);
 
-      // Color based on AQI
-      let pinColorHex = 0x10b981; // good
-      if (city.aqi > 200) pinColorHex = 0xef4444; // severe / very poor
-      else if (city.aqi > 150) pinColorHex = 0xf97316; // poor
-      else if (city.aqi > 100) pinColorHex = 0xeab308; // moderate
-      else if (city.aqi > 50) pinColorHex = 0x84cc16; // satisfactory
+      // Distinguishable AQI color palette against satellite surface
+      let pinColorHex = 0x4a9e86; // Good (Seafoam/Teal)
+      if (city.aqi > 200) pinColorHex = 0xb85450; // Severe / Very Poor (Coral Red)
+      else if (city.aqi > 150) pinColorHex = 0xe0937a; // Poor (Warm Coral)
+      else if (city.aqi > 100) pinColorHex = 0xe9b978; // Moderate (Soft Amber)
+      else if (city.aqi > 50) pinColorHex = 0x6baeaa; // Satisfactory (Ocean Teal)
 
-      // Small glowing sphere at the pin base
-      const pinSphereGeo = new THREE.SphereGeometry(0.05, 16, 16);
-      const pinMat = new THREE.MeshBasicMaterial({
-        color: pinColorHex,
-      });
+      // Small sphere at the pin location
+      const pinSphereGeo = new THREE.SphereGeometry(0.045, 16, 16);
+      const pinMat = new THREE.MeshBasicMaterial({ color: pinColorHex });
       const pinMesh = new THREE.Mesh(pinSphereGeo, pinMat);
       pinMesh.position.set(x, y, z);
       cityPinsGroup.add(pinMesh);
 
-      // Glowing outer ring on surface
-      const ringGeo = new THREE.RingGeometry(0.08, 0.12, 32);
+      // Clean ground ring
+      const ringGeo = new THREE.RingGeometry(0.07, 0.11, 32);
       const ringMat = new THREE.MeshBasicMaterial({
         color: pinColorHex,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.85,
       });
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
       ringMesh.position.set(x * 1.002, y * 1.002, z * 1.002);
@@ -576,24 +719,22 @@ export default function EarthGlobe3D({
     });
 
     // ==========================================
-    // 4. Lighting Setup
+    // 6. Lighting Setup
     // ==========================================
-    // Ambient light - deep space tint
-    const ambientLight = new THREE.AmbientLight(0x1a264a, 0.8);
+    const ambientLight = new THREE.AmbientLight(0x1a264a, 0.7);
     scene.add(ambientLight);
 
-    // Directional Sun Light (bursting from upper-left to match IMAGE 1)
-    const sunLight = new THREE.DirectionalLight(0xffffff, 1.8);
-    sunLight.position.set(-15, 12, 10);
+    const sunLight = new THREE.DirectionalLight(0xffffff, 1.7);
+    sunLight.position.set(sunDirection.x * 20, sunDirection.y * 20, sunDirection.z * 20);
     scene.add(sunLight);
 
-    // Subtle blue rim backlight
-    const backRimLight = new THREE.DirectionalLight(0x00d4ff, 1.2);
-    backRimLight.position.set(12, -8, -10);
+    // Soft backlight for celestial rim definition
+    const backRimLight = new THREE.DirectionalLight(0x38bdf8, 0.6);
+    backRimLight.position.set(10, -8, -12);
     scene.add(backRimLight);
 
     // ==========================================
-    // 5. Mouse Drag Orbit Controls
+    // 7. Mouse Drag & Touch Orbit Controls
     // ==========================================
     let isDragging = false;
     let prevMouseX = 0;
@@ -626,9 +767,8 @@ export default function EarthGlobe3D({
     const onMouseUp = () => {
       isDragging = false;
       isDraggingRef.current = false;
-      // Resume slow auto-rotation after 6 seconds of inactivity
       setTimeout(() => {
-        if (!isDraggingRef.current) {
+        if (!isDraggingRef.current && !prefersReducedMotion) {
           autoRotateRef.current = true;
         }
       }, 6000);
@@ -663,7 +803,9 @@ export default function EarthGlobe3D({
     const onTouchEnd = () => {
       isDragging = false;
       setTimeout(() => {
-        autoRotateRef.current = true;
+        if (!prefersReducedMotion) {
+          autoRotateRef.current = true;
+        }
       }, 6000);
     };
 
@@ -676,7 +818,7 @@ export default function EarthGlobe3D({
     window.addEventListener("touchend", onTouchEnd);
 
     // ==========================================
-    // 6. Animation & Pin Screen Projection Loop
+    // 8. Animation & Pin Screen Projection Loop
     // ==========================================
     const tempVec = new THREE.Vector3();
 
@@ -685,19 +827,23 @@ export default function EarthGlobe3D({
 
       // Auto-rotation when idle
       if (autoRotateRef.current && !isDraggingRef.current) {
-        targetRotationRef.current.y += 0.0012;
+        targetRotationRef.current.y += 0.001;
+      }
+
+      // Independent cloud rotation for atmospheric realism
+      if (cloudsMeshRef.current) {
+        cloudsMeshRef.current.rotation.y += 0.00035;
       }
 
       // Smooth damping interpolation
       globeGroup.rotation.y += (targetRotationRef.current.y - globeGroup.rotation.y) * 0.08;
       globeGroup.rotation.x += (targetRotationRef.current.x - globeGroup.rotation.x) * 0.08;
 
-      // Project 3D city positions to 2D screen coordinates for badges
-      const newProjectedPins = WORLD_CITIES.map((city) => {
+      // Project 3D city positions to 2D screen coordinates
+      const newProjectedPins = citiesRef.current.map((city) => {
         const phi = (90 - city.lat) * (Math.PI / 180);
         const theta = (city.lng + 180) * (Math.PI / 180);
 
-        // Position on globe
         tempVec.set(
           -(earthRadius * Math.sin(phi) * Math.cos(theta)),
           earthRadius * Math.cos(phi),
@@ -707,7 +853,7 @@ export default function EarthGlobe3D({
         // Apply globe orientation
         tempVec.applyEuler(globeGroup.rotation);
 
-        // Calculate visibility: if pointing towards camera (positive z from center)
+        // Facing camera check
         const isFacingCamera = tempVec.z > -0.2;
 
         // Project to 2D
@@ -742,6 +888,7 @@ export default function EarthGlobe3D({
 
     window.addEventListener("resize", handleResize);
 
+    // Cleanup & Resource Disposal
     return () => {
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
       window.removeEventListener("resize", handleResize);
@@ -751,6 +898,21 @@ export default function EarthGlobe3D({
       domElement.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
+
+      // Dispose geometries, materials and textures
+      earthGeometry.dispose();
+      earthShaderMaterial.dispose();
+      cloudsGeometry.dispose();
+      cloudsMaterial.dispose();
+      atmosphereGeometry.dispose();
+      atmosphereMaterial.dispose();
+      innerRimGeometry.dispose();
+      innerRimMaterial.dispose();
+      dayTexture.dispose();
+      nightTexture.dispose();
+      normalTexture.dispose();
+      specularTexture.dispose();
+      cloudsTexture.dispose();
       renderer.dispose();
     };
   }, []);
@@ -762,34 +924,121 @@ export default function EarthGlobe3D({
 
   return (
     <div className="relative w-full h-[580px] sm:h-[640px] lg:h-[700px] flex items-center justify-center overflow-hidden select-none">
-      {/* ========================================================
-          Solar Lens Flare burst overlay at top-left (Matches IMAGE 1)
-         ======================================================== */}
+      {/* Subtle Atmospheric Cosmic Vignette in Deep Ocean Blue */}
       <div
-        className="pointer-events-none absolute -top-12 -left-12 w-[380px] h-[380px] rounded-full opacity-60 mix-blend-screen"
+        className="pointer-events-none absolute inset-0 opacity-80"
         style={{
           background:
-            "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.9) 0%, rgba(56,189,248,0.4) 30%, rgba(99,102,241,0.15) 60%, rgba(0,0,0,0) 80%)",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute top-10 left-10 w-[500px] h-[1px] opacity-40 rotate-[35deg]"
-        style={{
-          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)",
+            "radial-gradient(circle at 50% 50%, rgba(14, 30, 60, 0.5) 0%, rgba(6, 13, 30, 0.98) 100%)",
         }}
       />
 
-      {/* Background Starfield / Cosmic Ambient Gradients */}
+      {/* Gentle Celestial Sun Flare (Subtle, non-neon) */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-40"
+        className="pointer-events-none absolute -top-20 -left-20 w-[420px] h-[420px] rounded-full opacity-35 mix-blend-screen"
         style={{
           background:
-            "radial-gradient(circle at 60% 50%, rgba(14, 30, 70, 0.45) 0%, rgba(4, 9, 22, 0.95) 100%)",
+            "radial-gradient(circle at 40% 40%, rgba(255,255,255,0.8) 0%, rgba(107,174,170,0.3) 35%, rgba(35,75,85,0.1) 60%, rgba(0,0,0,0) 80%)",
         }}
       />
 
-      {/* WebGL 3D Canvas Container */}
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      {/* WebGL 3D Canvas or Fallback */}
+      {webGlAvailable ? (
+        <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center space-y-4 p-8 text-center text-slate-300">
+          <div className="w-16 h-16 rounded-full bg-[#101F3B] border border-[#234B55] flex items-center justify-center text-[#6BAEAA]">
+            <Thermometer className="w-8 h-8" />
+          </div>
+          <h3 className="text-base font-bold text-white">Interactive 3D Earth Simulation</h3>
+          <p className="text-xs text-[#8A9EA4] max-w-sm">
+            WebGL is not accelerated in your current browser configuration. Switch to IQ Air Map mode to view live station telemetry.
+          </p>
+        </div>
+      )}
+
+      {/* Top Left: Search City On Globe */}
+      <div className="absolute top-5 left-5 z-30 w-60 sm:w-72">
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 text-[#6BAEAA] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={globeSearchQuery}
+            onChange={(e) => setGlobeSearchQuery(e.target.value)}
+            onFocus={() => setIsSearchOpen(true)}
+            placeholder="Search city on Earth..."
+            className="w-full pl-8 pr-3 py-1.5 rounded-full liquid-glass-dark border border-[#234B55] hover:border-[#6BAEAA] focus:border-[#6BAEAA] text-xs text-white placeholder:text-slate-400 outline-none transition-all shadow-lg glow-btn"
+          />
+          {isGlobeSearching && (
+            <div className="w-3 h-3 border-2 border-[#6BAEAA] border-t-transparent rounded-full animate-spin absolute right-3 top-1/2 -translate-y-1/2" />
+          )}
+        </div>
+
+        {/* Dropdown Results */}
+        {isSearchOpen && globeSearchResults.length > 0 && (
+          <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-2xl liquid-glass-dark border border-[#234B55] p-2 space-y-1 max-h-56 overflow-y-auto no-scrollbar shadow-2xl backdrop-blur-2xl">
+            {globeSearchResults.map((r) => (
+              <button
+                key={`${r.name}-${r.latitude}-${r.longitude}`}
+                onClick={async () => {
+                  const newPin: GlobeCityPin = {
+                    id: `pin-${r.name.toLowerCase()}-${Date.now()}`,
+                    name: r.name,
+                    country: r.country,
+                    countryCode: r.countryCode || "LOC",
+                    flag: "📍",
+                    lat: r.latitude,
+                    lng: r.longitude,
+                    aqi: 75,
+                    category: "Satisfactory",
+                    dominantPollutant: "PM2.5",
+                    temp: 22,
+                    humidity: 50,
+                    windSpeed: 10,
+                    riskPercent: 25,
+                    weatherCondition: "Live Copernicus Telemetry",
+                  };
+
+                  try {
+                    const res = await fetch(
+                      `/api/air-quality?lat=${r.latitude}&lon=${r.longitude}&name=${encodeURIComponent(
+                        r.name
+                      )}&country=${encodeURIComponent(r.country)}`
+                    );
+                    if (res.ok) {
+                      const d = await res.json();
+                      newPin.aqi = d.cpcbAQI;
+                      newPin.category = d.cpcbCategory;
+                      newPin.dominantPollutant = d.dominantPollutant;
+                      newPin.temp = d.weather?.temperature ?? 22;
+                      newPin.humidity = d.weather?.relativeHumidity ?? 50;
+                      newPin.windSpeed = d.weather?.windSpeedKmH ?? 10;
+                    }
+                  } catch (e) {
+                    console.warn("Live AQI fetch for searched pin:", e);
+                  }
+
+                  setCitiesList((prev) => [...prev, newPin]);
+                  citiesRef.current = [...citiesRef.current, newPin];
+                  handleCitySelect(newPin);
+                  setGlobeSearchQuery("");
+                  setIsSearchOpen(false);
+                }}
+                className="w-full text-left px-3 py-1.5 rounded-xl text-xs hover:bg-[#1a3848] text-slate-100 flex items-center justify-between transition-colors"
+              >
+                <span className="font-medium truncate">{r.name}, {r.country}</span>
+                <span className="text-[10px] font-mono text-[#6BAEAA]">Select</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Top Right: Standard Badge */}
+      <div className="absolute top-5 right-5 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full liquid-glass-dark border border-[#234B55] text-[10px] font-mono text-slate-300 shadow-lg">
+        <Globe2 className="w-3.5 h-3.5 text-[#6BAEAA]" />
+        <span>CPCB NAQI (India MoEFCC) Standard</span>
+      </div>
 
       {/* ========================================================
           Interactive 2D Projected City AQI Badges on the Globe
@@ -800,17 +1049,24 @@ export default function EarthGlobe3D({
           const isSelected = city.id === internalSelectedCity.id;
           const isHovered = hoveredCity?.id === city.id;
 
-          // Color classification
-          let badgeBg = "bg-slate-800/80 border-slate-700 text-slate-200";
-          if (city.aqi > 200) badgeBg = "bg-red-600/90 border-red-400 text-white shadow-lg shadow-red-500/30";
-          else if (city.aqi > 150) badgeBg = "bg-orange-500/90 border-orange-400 text-white shadow-lg shadow-orange-500/30";
-          else if (city.aqi > 100) badgeBg = "bg-amber-500/90 border-amber-300 text-slate-900 font-extrabold shadow-lg shadow-amber-500/30";
-          else if (city.aqi > 50) badgeBg = "bg-yellow-400/90 border-yellow-300 text-slate-900 font-extrabold shadow-lg shadow-yellow-400/20";
-          else badgeBg = "bg-emerald-500/80 border-emerald-400 text-white shadow-lg shadow-emerald-500/20";
+          // Severity colors matching CPCB standard palette
+          let badgeBg = "bg-[#4A9E86] text-white border-[#A9D5C8]";
+          if (city.aqi > 400) {
+            badgeBg = "bg-[#8B263E] border-[#A83852] text-white shadow-lg shadow-[#8B263E]/40";
+          } else if (city.aqi > 300) {
+            badgeBg = "bg-[#B85450] border-[#D98E83] text-white shadow-lg shadow-[#B85450]/30";
+          } else if (city.aqi > 200) {
+            badgeBg = "bg-[#E0937A] border-[#E6ABA1] text-white shadow-lg shadow-[#E0937A]/30";
+          } else if (city.aqi > 100) {
+            badgeBg = "bg-[#E9B978] border-[#F2CE9D] text-[#1A373E] font-extrabold shadow-lg shadow-[#E9B978]/30";
+          } else if (city.aqi > 50) {
+            badgeBg = "bg-[#6BAEAA] border-[#A9D5C8] text-[#12272C] font-extrabold shadow-lg shadow-[#6BAEAA]/25";
+          } else {
+            badgeBg = "bg-[#4A9E86] border-[#A9D5C8] text-white shadow-lg shadow-[#4A9E86]/25";
+          }
 
-          // If selected, make it a large prominent yellow circle matching IMAGE 1 (circle 78)
           if (isSelected) {
-            badgeBg = "bg-amber-400 border-amber-200 text-slate-950 font-black shadow-2xl shadow-amber-400/50";
+            badgeBg = "bg-[#E9B978] border-white text-[#12272C] font-black shadow-2xl shadow-[#E9B978]/60 ring-4 ring-[#E9B978]/40";
           }
 
           return (
@@ -821,10 +1077,10 @@ export default function EarthGlobe3D({
               onMouseLeave={() => setHoveredCity(null)}
               className={`pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center transition-all duration-200 border ${
                 isSelected
-                  ? "w-12 h-12 text-sm z-30 ring-4 ring-amber-400/30 scale-110"
+                  ? "w-12 h-12 text-sm z-30 scale-110"
                   : isHovered
                   ? "w-9 h-9 text-xs z-20 scale-125"
-                  : "w-8 h-8 text-[11px] z-10 opacity-90 hover:opacity-100"
+                  : "w-8 h-8 text-[11px] z-10 opacity-95 hover:opacity-100"
               } ${badgeBg}`}
               style={{
                 left: `${x}px`,
@@ -839,7 +1095,7 @@ export default function EarthGlobe3D({
       </div>
 
       {/* ========================================================
-          Active Selected City Floating Tooltip Card (Matches IMAGE 1)
+          Active Selected City Floating Tooltip Card
          ======================================================== */}
       {activePinProjection && activePinProjection.visible && (
         <div
@@ -849,59 +1105,91 @@ export default function EarthGlobe3D({
             top: `${activePinProjection.y - 14}px`,
           }}
         >
-          {/* Card Body */}
-          <div className="relative w-64 sm:w-72 p-3 sm:p-3.5 rounded-2xl bg-[#141b34]/95 border border-indigo-500/30 shadow-2xl backdrop-blur-xl text-left text-white animate-fadeIn">
-            {/* Pointer triangle pointing down to active badge */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-[#141b34]" />
+          {/* Card Body with Liquid Glass & Subtle Teal Glow */}
+          <div className="relative w-64 sm:w-72 p-3 sm:p-3.5 rounded-2xl liquid-glass-dark glow-card-dark border border-[#6BAEAA]/50 shadow-2xl backdrop-blur-xl text-left text-white animate-fadeIn">
+            {/* Pointer triangle */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-[#0e1e30]" />
 
-            {/* Header: [i] Jakarta, Indonesia Air Quality + Details */}
-            <div className="flex items-center justify-between gap-1 pb-2 border-b border-slate-700/60 text-xs">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-1 pb-2 border-b border-[#234B55]/70 text-xs">
               <div className="flex items-center gap-1.5 truncate">
-                <span className="p-0.5 rounded-full bg-red-500/20 text-red-400">
+                <span className="p-0.5 rounded-full bg-[#E9B978]/20 text-[#E9B978]">
                   <Info className="w-3 h-3" />
                 </span>
-                <span className="font-semibold text-slate-200 truncate">
+                <span className="font-semibold text-slate-100 truncate">
                   {internalSelectedCity.name}, {internalSelectedCity.country}
                 </span>
               </div>
               <button
                 onClick={onViewDetails}
-                className="text-[10px] text-amber-400 hover:text-amber-300 font-medium flex items-center gap-0.5 transition-colors shrink-0"
+                className="text-[10px] text-[#E9B978] hover:text-[#F2CE9D] font-medium flex items-center gap-0.5 transition-colors shrink-0 glow-btn"
               >
                 <span>Details</span>
                 <ExternalLink className="w-2.5 h-2.5" />
               </button>
             </div>
 
-            {/* Middle: [137 AQI] Unhealthy for sensitive people */}
+            {/* Middle */}
             <div className="flex items-center gap-2.5 py-2">
-              <div className="px-2 py-1 rounded-lg bg-orange-500/90 text-white font-extrabold text-xs shadow-sm flex flex-col items-center">
+              <div
+                className={`px-2 py-1 rounded-lg text-xs font-black shadow-sm flex flex-col items-center shrink-0 ${
+                  internalSelectedCity.aqi > 400
+                    ? "bg-[#8B263E] text-white"
+                    : internalSelectedCity.aqi > 300
+                    ? "bg-[#B85450] text-white"
+                    : internalSelectedCity.aqi > 200
+                    ? "bg-[#E0937A] text-white"
+                    : internalSelectedCity.aqi > 100
+                    ? "bg-[#E9B978] text-[#12272C]"
+                    : internalSelectedCity.aqi > 50
+                    ? "bg-[#6BAEAA] text-[#12272C]"
+                    : "bg-[#4A9E86] text-white"
+                }`}
+              >
                 <span>{internalSelectedCity.aqi}</span>
-                <span className="text-[8px] uppercase tracking-tighter opacity-80">AQI</span>
+                <span className="text-[8px] uppercase tracking-tighter opacity-85">AQI</span>
               </div>
               <div className="text-xs font-medium text-slate-200 leading-tight">
-                {internalSelectedCity.aqi > 150
-                  ? "Unhealthy for sensitive people"
+                {internalSelectedCity.aqi > 400
+                  ? "Severe Smog: Hazardous to all. Stay indoors."
+                  : internalSelectedCity.aqi > 300
+                  ? "Very Poor: High particulate risk. Seal windows."
+                  : internalSelectedCity.aqi > 200
+                  ? "Poor: Unhealthy for vulnerable lungs & children."
                   : internalSelectedCity.aqi > 100
-                  ? "Moderate health risk for vulnerable"
+                  ? "Moderate: Sensitive groups may experience irritation."
                   : internalSelectedCity.aqi > 50
-                  ? "Acceptable air quality for most"
-                  : "Clean air safe for all activities"}
+                  ? "Satisfactory: Acceptable for general public."
+                  : "Good: Clean air safe for all outdoor activities."}
               </div>
             </div>
 
-            {/* Bottom Row: Temp, Humidity, Wind speed */}
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px] text-slate-300 font-mono">
+            {/* Explain This City Action */}
+            {onExplainCity && (
+              <div className="pb-2">
+                <button
+                  type="button"
+                  onClick={() => onExplainCity(internalSelectedCity)}
+                  className="w-full py-1.5 px-2.5 rounded-xl bg-[#6BAEAA]/20 hover:bg-[#6BAEAA]/30 border border-[#6BAEAA]/40 text-[#A9D5C8] text-[10px] font-bold transition-all flex items-center justify-center gap-1.5 glow-btn"
+                >
+                  <Sparkles className="w-3 h-3 text-[#E9B978]" />
+                  <span>Explain this city with AI</span>
+                </button>
+              </div>
+            )}
+
+            {/* Bottom Row */}
+            <div className="flex items-center justify-between pt-2 border-t border-[#234B55]/70 text-[11px] text-slate-300 font-mono">
               <div className="flex items-center gap-1">
-                <Thermometer className="w-3 h-3 text-amber-400" />
+                <Thermometer className="w-3 h-3 text-[#E9B978]" />
                 <span>{internalSelectedCity.temp}°C</span>
               </div>
               <div className="flex items-center gap-1">
-                <Droplets className="w-3 h-3 text-cyan-400" />
+                <Droplets className="w-3 h-3 text-[#6BAEAA]" />
                 <span>{internalSelectedCity.humidity}%</span>
               </div>
               <div className="flex items-center gap-1">
-                <Wind className="w-3 h-3 text-emerald-400" />
+                <Wind className="w-3 h-3 text-[#A9D5C8]" />
                 <span>{internalSelectedCity.windSpeed} km/h</span>
               </div>
             </div>
@@ -910,13 +1198,13 @@ export default function EarthGlobe3D({
       )}
 
       {/* ========================================================
-          Bottom Right: Zoom Controls [ + ] [ - ] & Reset
+          Bottom Right: Zoom Controls [ + ] [ - ] & Reset with Glow
          ======================================================== */}
       <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2 text-xs font-medium text-slate-300">
         <span className="text-slate-400 text-xs hidden sm:inline">Zoom</span>
         <button
           onClick={() => handleZoom(-1.0)}
-          className="w-8 h-8 rounded-full bg-[#131d38]/90 border border-slate-700 hover:border-cyan-400 text-white flex items-center justify-center hover:bg-slate-800 transition-all shadow-md active:scale-95"
+          className="w-8 h-8 rounded-full liquid-glass-dark border border-[#234B55] hover:border-[#6BAEAA] text-white flex items-center justify-center transition-all shadow-md glow-btn"
           title="Zoom In"
           aria-label="Zoom In"
         >
@@ -924,7 +1212,7 @@ export default function EarthGlobe3D({
         </button>
         <button
           onClick={() => handleZoom(1.0)}
-          className="w-8 h-8 rounded-full bg-[#131d38]/90 border border-slate-700 hover:border-cyan-400 text-white flex items-center justify-center hover:bg-slate-800 transition-all shadow-md active:scale-95"
+          className="w-8 h-8 rounded-full liquid-glass-dark border border-[#234B55] hover:border-[#6BAEAA] text-white flex items-center justify-center transition-all shadow-md glow-btn"
           title="Zoom Out"
           aria-label="Zoom Out"
         >
@@ -932,12 +1220,18 @@ export default function EarthGlobe3D({
         </button>
         <button
           onClick={handleResetRotation}
-          className="w-8 h-8 rounded-full bg-[#131d38]/90 border border-slate-700 hover:border-cyan-400 text-white flex items-center justify-center hover:bg-slate-800 transition-all shadow-md active:scale-95"
+          className="w-8 h-8 rounded-full liquid-glass-dark border border-[#234B55] hover:border-[#6BAEAA] text-white flex items-center justify-center transition-all shadow-md glow-btn"
           title="Reset Globe View"
           aria-label="Reset Globe View"
         >
           <RotateCcw className="w-3.5 h-3.5" />
         </button>
+      </div>
+
+      {/* NASA Attribution Badge */}
+      <div className="absolute bottom-6 left-6 z-20 hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0c1833]/80 border border-[#234B55]/70 text-[10px] font-mono text-slate-400">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#6BAEAA]" />
+        <span>NASA Visible Earth / Blue Marble</span>
       </div>
     </div>
   );

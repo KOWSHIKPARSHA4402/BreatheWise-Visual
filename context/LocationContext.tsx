@@ -24,6 +24,10 @@ interface LocationContextType {
   demoMode: boolean;
   setDemoMode: (enabled: boolean) => void;
   simulateAqiScenario: (scenario: "severe" | "moderate" | "good") => void;
+  experienceMode: "simple" | "expert";
+  setExperienceMode: (mode: "simple" | "expert") => void;
+  schoolProgress: Record<string, boolean>;
+  markLessonComplete: (lessonId: string) => void;
 }
 
 const DEFAULT_PREFS: UserLifestylePreferences = {
@@ -47,6 +51,10 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   const [demoMode, setDemoModeState] = useState<boolean>(false);
   const [userPrefs, setUserPrefs] = useState<UserLifestylePreferences>(DEFAULT_PREFS);
   const [planItems, setPlanItems] = useState<DailyPlanItem[]>([]);
+  const [experienceMode, setExperienceModeState] = useState<"simple" | "expert">("simple");
+  const [schoolProgress, setSchoolProgressState] = useState<Record<string, boolean>>({
+    "lesson-1": true, // First lesson marked complete as an encouraging start
+  });
 
   // Load saved preferences from LocalStorage
   useEffect(() => {
@@ -57,16 +65,48 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
       }
       const savedLoc = localStorage.getItem("breathewise_selected_location");
       if (savedLoc) {
-        setLocationState(JSON.parse(savedLoc));
+        const parsedLoc = JSON.parse(savedLoc);
+        if (parsedLoc && typeof parsedLoc.latitude === "number" && typeof parsedLoc.longitude === "number") {
+          setLocationState(parsedLoc);
+        }
       }
       const savedDemo = localStorage.getItem("breathewise_demo_mode");
       if (savedDemo) {
         setDemoModeState(savedDemo === "true");
       }
+      const savedMode = localStorage.getItem("breathewise_experience_mode");
+      if (savedMode === "simple" || savedMode === "expert") {
+        setExperienceModeState(savedMode);
+      }
+      const savedProgress = localStorage.getItem("breathewise_school_progress");
+      if (savedProgress) {
+        setSchoolProgressState(JSON.parse(savedProgress));
+      }
     } catch (e) {
       console.warn("Could not read from localStorage:", e);
     }
   }, []);
+
+  const setExperienceMode = (mode: "simple" | "expert") => {
+    setExperienceModeState(mode);
+    try {
+      localStorage.setItem("breathewise_experience_mode", mode);
+    } catch (e) {
+      console.warn("Could not save experience mode to localStorage:", e);
+    }
+  };
+
+  const markLessonComplete = (lessonId: string) => {
+    setSchoolProgressState((prev) => {
+      const updated = { ...prev, [lessonId]: true };
+      try {
+        localStorage.setItem("breathewise_school_progress", JSON.stringify(updated));
+      } catch (e) {
+        console.warn("Could not save school progress to localStorage:", e);
+      }
+      return updated;
+    });
+  };
 
   // Fetch AQI whenever location changes
   const fetchAQI = useCallback(async (loc: LocationData) => {
@@ -275,6 +315,10 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         demoMode,
         setDemoMode,
         simulateAqiScenario,
+        experienceMode,
+        setExperienceMode,
+        schoolProgress,
+        markLessonComplete,
       }}
     >
       {children}

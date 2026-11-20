@@ -94,13 +94,13 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-[#0a0f1d]/90 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full border-b border-[#DCECE8] bg-white/95 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between gap-4 shadow-[0_1px_3px_rgba(35,75,85,0.03)]">
       {/* Left: Mobile Toggle + Location Selector + Search Trigger */}
       <div className="flex items-center gap-3">
         {onMenuClick && (
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+            className="lg:hidden p-2 rounded-xl text-[#687D83] hover:text-[#234B55] hover:bg-[#DCECE8]/60 transition-colors"
             aria-label="Toggle mobile menu"
           >
             <SlidersHorizontal className="w-5 h-5" />
@@ -110,24 +110,24 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         {/* Location selector button */}
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#131d31] border border-slate-700/80 hover:border-emerald-500/60 text-xs sm:text-sm font-medium text-slate-200 transition-all group shadow-sm"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#F4F8F6] border border-[#DCECE8] hover:border-[#6BAEAA] text-xs sm:text-sm font-medium text-[#234B55] transition-all group shadow-sm"
           title="Change location"
         >
-          <MapPin className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-          <span className="font-bold text-white truncate max-w-[140px] sm:max-w-[200px]">
+          <MapPin className="w-4 h-4 text-[#6BAEAA] group-hover:scale-110 transition-transform" />
+          <span className="font-bold text-[#234B55] truncate max-w-[140px] sm:max-w-[200px]">
             {location.name}
           </span>
-          <span className="text-slate-400 hidden sm:inline">
+          <span className="text-[#687D83] hidden sm:inline">
             · {location.country}
           </span>
-          <span className="ml-1 px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400 font-mono hidden md:inline">
+          <span className="ml-1 px-1.5 py-0.5 rounded bg-[#DCECE8] text-[10px] text-[#234B55] font-mono hidden md:inline">
             Change
           </span>
         </button>
 
         {demoMode && (
-          <span className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-purple-950/80 text-purple-300 font-semibold border border-purple-800">
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+          <span className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#E9B978]/20 text-[#75460E] font-semibold border border-[#E9B978]/40">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E9B978] animate-pulse" />
             <span>Simulated Scenario</span>
           </span>
         )}
@@ -137,13 +137,13 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
       <div className="hidden lg:flex items-center flex-1 max-w-sm mx-4">
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#131d31]/80 border border-slate-800 text-xs text-slate-400 hover:text-slate-200 hover:border-slate-700 transition-all"
+          className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#F4F8F6] border border-[#DCECE8] text-xs text-[#687D83] hover:text-[#234B55] hover:border-[#A9D5C8] transition-all shadow-sm"
         >
           <span className="flex items-center gap-2">
-            <Search className="w-3.5 h-3.5 text-slate-500" />
+            <Search className="w-3.5 h-3.5 text-[#687D83]" />
             <span>Search city or coordinates...</span>
           </span>
-          <kbd className="text-[10px] font-mono bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">
+          <kbd className="text-[10px] font-mono bg-[#DCECE8] px-1.5 py-0.5 rounded text-[#234B55]">
             ⌘K
           </kbd>
         </button>
@@ -154,18 +154,18 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         <button
           onClick={() => refreshAirQuality()}
           disabled={isLoading}
-          className="p-2 rounded-xl bg-[#131d31] border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all disabled:opacity-50"
+          className="p-2 rounded-xl bg-[#F4F8F6] border border-[#DCECE8] text-[#687D83] hover:text-[#234B55] hover:border-[#A9D5C8] transition-all disabled:opacity-50"
           title="Refresh live environmental telemetry"
           aria-label="Refresh data"
         >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin text-emerald-400" : ""}`} />
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin text-[#6BAEAA]" : ""}`} />
         </button>
 
         {/* Current AQI Category Badge */}
         {airQuality && (
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
+          <div className="flex items-center gap-2 pl-2 border-l border-[#DCECE8]">
             <div className="text-right hidden sm:block">
-              <div className="text-[9px] font-mono uppercase text-slate-400">CPCB NAQI</div>
+              <div className="text-[9px] font-mono uppercase text-[#687D83]">CPCB NAQI</div>
               <div className={`text-xs font-bold ${theme?.textColor}`}>
                 {airQuality.cpcbCategory}
               </div>
@@ -183,56 +183,56 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         {/* Settings / User Profile Avatar */}
         <Link
           href="/settings"
-          className="p-2 rounded-xl bg-[#131d31] border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all ml-1"
+          className="p-2 rounded-xl bg-[#F4F8F6] border border-[#DCECE8] text-[#687D83] hover:text-[#234B55] hover:border-[#A9D5C8] transition-all ml-1 shadow-sm"
           title="User Preferences & Demo Controls"
         >
-          <User className="w-4 h-4 text-slate-300" />
+          <User className="w-4 h-4 text-[#234B55]" />
         </Link>
       </div>
 
       {/* City Search Modal */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
-          <div className="w-full max-w-lg bg-[#0e172a] rounded-3xl shadow-2xl border border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-[#234B55]/40 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
+          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#DCECE8] overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-[#234B55]">
             {/* Search Input Bar */}
-            <div className="p-4 border-b border-slate-800 flex items-center gap-3 bg-[#111c33]">
-              <Search className="w-5 h-5 text-emerald-400 shrink-0" />
+            <div className="p-4 border-b border-[#DCECE8] flex items-center gap-3 bg-[#F4F8F6]">
+              <Search className="w-5 h-5 text-[#6BAEAA] shrink-0" />
               <input
                 ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search city (e.g. New Delhi, Mumbai, Lahore, London)..."
-                className="flex-1 bg-transparent border-none text-white placeholder:text-slate-400 text-sm focus:outline-none"
+                className="flex-1 bg-transparent border-none text-[#234B55] placeholder:text-[#687D83] text-sm focus:outline-none"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="p-1 text-slate-400 hover:text-white"
+                  className="p-1 text-[#687D83] hover:text-[#234B55]"
                 >
                   <X className="w-4 h-4" />
                 </button>
               )}
               <button
                 onClick={() => setIsSearchOpen(false)}
-                className="text-xs font-mono text-slate-400 hover:text-white px-2 py-1 rounded-lg bg-slate-800"
+                className="text-xs font-mono text-[#687D83] hover:text-[#234B55] px-2 py-1 rounded-lg bg-[#DCECE8]"
               >
                 Esc
               </button>
             </div>
 
             {/* Geolocation Button */}
-            <div className="p-3 bg-[#0c1426] border-b border-slate-800/80">
+            <div className="p-3 bg-white border-b border-[#DCECE8]">
               <button
                 onClick={handleUseCurrentLocation}
-                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#131d31] border border-slate-700 hover:border-emerald-500 text-xs font-semibold text-emerald-400 transition-colors shadow-sm"
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#F4F8F6] border border-[#DCECE8] hover:border-[#6BAEAA] text-xs font-semibold text-[#234B55] transition-colors shadow-sm"
               >
-                <Navigation className="w-3.5 h-3.5" />
+                <Navigation className="w-3.5 h-3.5 text-[#6BAEAA]" />
                 <span>Use Current Browser Geolocation</span>
               </button>
               {geoError && (
-                <div className="mt-2 text-[11px] text-amber-400 flex items-center gap-1.5">
-                  <AlertTriangle className="w-3 h-3 shrink-0" />
+                <div className="mt-2 text-[11px] text-[#75460E] bg-[#E9B978]/20 p-2 rounded-lg flex items-center gap-1.5">
+                  <AlertTriangle className="w-3 h-3 shrink-0 text-[#E9B978]" />
                   <span>{geoError}</span>
                 </div>
               )}
@@ -240,16 +240,16 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
 
             {/* Results List */}
             <div className="max-h-72 overflow-y-auto p-2 space-y-1">
-              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-400">
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#687D83] font-semibold">
                 {searchQuery ? "Matching Results" : "Major Urban Smog Monitoring Locations"}
               </div>
 
               {isSearching ? (
-                <div className="p-6 text-center text-xs text-slate-400 font-mono">
+                <div className="p-6 text-center text-xs text-[#687D83] font-mono">
                   Searching Open-Meteo Geocoding Database...
                 </div>
               ) : searchResults.length === 0 ? (
-                <div className="p-6 text-center text-xs text-slate-400">
+                <div className="p-6 text-center text-xs text-[#687D83]">
                   No locations found matching &quot;{searchQuery}&quot;.
                 </div>
               ) : (
@@ -257,23 +257,23 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
                   <button
                     key={`${city.name}-${city.country}-${idx}`}
                     onClick={() => handleSelectCity(city)}
-                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-[#15223c] transition-colors text-left group"
+                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-[#DCECE8]/50 transition-colors text-left group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-emerald-950/60 text-emerald-400 group-hover:scale-110 transition-transform">
-                        <MapPin className="w-4 h-4" />
+                      <div className="p-2 rounded-lg bg-[#DCECE8] text-[#234B55] group-hover:scale-110 transition-transform">
+                        <MapPin className="w-4 h-4 text-[#6BAEAA]" />
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-sm font-semibold text-[#234B55]">
                           {city.name}
                         </div>
-                        <div className="text-xs text-slate-400">
+                        <div className="text-xs text-[#687D83]">
                           {city.admin1 ? `${city.admin1}, ` : ""}
                           {city.country}
                         </div>
                       </div>
                     </div>
-                    <span className="text-[11px] font-mono text-slate-400">
+                    <span className="text-[11px] font-mono text-[#687D83]">
                       {city.latitude.toFixed(2)}°, {city.longitude.toFixed(2)}°
                     </span>
                   </button>

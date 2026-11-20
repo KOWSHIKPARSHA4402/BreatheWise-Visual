@@ -26,12 +26,17 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const cacheKey = `${latitude.toFixed(3)},${longitude.toFixed(3)}`;
+  const include30d = searchParams.get("history30d") === "true";
+
+  const cacheKey = `${latitude.toFixed(3)},${longitude.toFixed(3)}${include30d ? ":30d" : ""}`;
   const cached = cache.get(cacheKey);
 
   if (cached && cached.expiresAt > Date.now()) {
     return NextResponse.json(cached.data, {
-      headers: { "X-Cache": "HIT" },
+      headers: {
+        "X-Cache": "HIT",
+        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=120",
+      },
     });
   }
 
@@ -43,11 +48,14 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    const data = await fetchLiveAirQuality(location);
+    const data = await fetchLiveAirQuality(location, { include30d });
     cache.set(cacheKey, { data, expiresAt: Date.now() + CACHE_TTL_MS });
 
     return NextResponse.json(data, {
-      headers: { "X-Cache": "MISS" },
+      headers: {
+        "X-Cache": "MISS",
+        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=120",
+      },
     });
   } catch (error) {
     console.error("API route error, falling back to verified demo data:", error);

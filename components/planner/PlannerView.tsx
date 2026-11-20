@@ -45,20 +45,20 @@ export default function PlannerView() {
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-900 to-teal-950 text-white border border-emerald-800 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="p-6 sm:p-8 rounded-3xl liquid-glass-dark glow-card-dark text-white relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2 z-10 max-w-xl">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+            <span className="p-1.5 rounded-lg bg-[#6BAEAA]/25 text-[#A9D5C8]">
               <CalendarCheck2 className="w-4 h-4" />
             </span>
-            <span className="text-xs font-mono uppercase font-semibold tracking-wider text-emerald-300">
+            <span className="text-xs font-mono uppercase font-semibold tracking-wider text-[#A9D5C8]">
               Personalized Smog Navigation
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             My Clean Air Plan
           </h1>
-          <p className="text-xs sm:text-sm text-emerald-100/80 font-light leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#DCECE8] font-light leading-relaxed">
             Tailored to your daily routine in <span className="font-semibold text-white">{location.name}</span> (Current AQI: {airQuality?.cpcbAQI ?? "--"}). Check off recommendations to reduce personal particulate exposure.
           </p>
         </div>
@@ -66,14 +66,14 @@ export default function PlannerView() {
         {/* Progress & Prefs Trigger */}
         <div className="z-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
           {/* Progress Card */}
-          <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center space-y-1">
+          <div className="p-4 rounded-2xl liquid-glass-dark glow-card-dark text-center space-y-1">
             <div className="text-3xl font-black font-mono">{progressPercent}%</div>
-            <div className="text-[11px] font-mono text-emerald-200">
+            <div className="text-[11px] font-mono text-[#DCECE8]">
               {completedCount} of {planItems.length} Actions Completed
             </div>
             <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden mt-2">
               <div
-                className="bg-emerald-400 h-full rounded-full transition-all duration-300"
+                className="bg-[#6BAEAA] h-full rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -81,20 +81,20 @@ export default function PlannerView() {
 
           <button
             onClick={() => setShowPrefsModal(true)}
-            className="px-4 py-3 rounded-2xl bg-white text-emerald-950 font-bold text-xs hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2 shadow-md shrink-0"
+            className="px-4 py-3 rounded-2xl bg-white text-[#234B55] font-bold text-xs hover:bg-[#F4F8F6] transition-colors flex items-center justify-center gap-2 shadow-sm shrink-0 glow-btn"
           >
-            <SlidersHorizontal className="w-4 h-4 text-emerald-700" />
+            <SlidersHorizontal className="w-4 h-4 text-[#234B55]" />
             <span>Edit Lifestyle Profile</span>
           </button>
         </div>
       </div>
 
       {/* Action Controls */}
-      <div className="flex items-center justify-between text-xs text-slate-500 px-1">
+      <div className="flex items-center justify-between text-xs text-[#687D83] px-1 font-mono">
         <span>Dynamic 4-Phase Itinerary</span>
         <button
           onClick={resetPlanItems}
-          className="flex items-center gap-1 hover:text-slate-900 dark:hover:text-white transition-colors"
+          className="flex items-center gap-1 hover:text-[#234B55] transition-colors glow-btn px-2.5 py-1 rounded-lg"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset Checkmarks</span>
@@ -110,14 +110,14 @@ export default function PlannerView() {
           return (
             <div
               key={phase}
-              className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4"
+              className="p-5 sm:p-6 rounded-3xl liquid-glass glow-card space-y-4"
             >
-              <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
-                <Clock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+              <div className="flex items-center gap-2.5 pb-3 border-b border-[#DCECE8]">
+                <Clock className="w-4 h-4 text-[#6BAEAA]" />
+                <h2 className="text-base font-bold text-[#234B55]">
                   {phase} Protocol
                 </h2>
-                <span className="text-[11px] font-mono text-slate-400">
+                <span className="text-[11px] font-mono text-[#687D83]">
                   ({phaseItems.length} recommendations)
                 </span>
               </div>
@@ -127,20 +127,20 @@ export default function PlannerView() {
                   <div
                     key={item.id}
                     onClick={() => handleToggle(item.id)}
-                    className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-4 ${
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-4 glow-card ${
                       item.isCompleted
-                        ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/60 opacity-80"
-                        : "bg-slate-50/60 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 hover:border-emerald-500/40"
+                        ? "bg-[#DCECE8]/40 border-[#A9D5C8] opacity-80"
+                        : "liquid-glass hover:border-[#6BAEAA]"
                     }`}
                   >
                     <button
-                      className="mt-0.5 text-emerald-600 dark:text-emerald-400 shrink-0"
+                      className="mt-0.5 text-[#234B55] shrink-0"
                       aria-label={item.isCompleted ? "Mark incomplete" : "Mark completed"}
                     >
                       {item.isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-600 fill-emerald-100 dark:fill-emerald-950" />
+                        <CheckCircle2 className="w-5 h-5 text-[#4A9E86] fill-[#DCECE8]" />
                       ) : (
-                        <Circle className="w-5 h-5 text-slate-400" />
+                        <Circle className="w-5 h-5 text-[#687D83]" />
                       )}
                     </button>
 
@@ -149,28 +149,28 @@ export default function PlannerView() {
                         <span
                           className={`text-sm font-bold ${
                             item.isCompleted
-                              ? "line-through text-slate-500 dark:text-slate-400"
-                              : "text-slate-900 dark:text-white"
+                              ? "line-through text-[#687D83]"
+                              : "text-[#234B55]"
                           }`}
                         >
                           {item.title}
                         </span>
-                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#DCECE8]/70 text-[#234B55] font-semibold border border-[#A9D5C8]">
                           {item.category}
                         </span>
                         {item.priority === "High" && (
-                          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 font-bold">
+                          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#B85450]/15 text-[#611A17] border border-[#B85450]/30 font-bold">
                             High Priority
                           </span>
                         )}
                       </div>
 
-                      <p className="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+                      <p className="text-xs text-[#687D83] font-light leading-relaxed">
                         {item.description}
                       </p>
 
-                      <div className="pt-2 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-                        <ShieldCheck className="w-3.5 h-3.5" />
+                      <div className="pt-2 text-[11px] font-mono text-[#234B55] flex items-center gap-1.5 font-medium">
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#6BAEAA]" />
                         <span>Benefit: {item.healthBenefit}</span>
                       </div>
                     </div>
@@ -184,20 +184,20 @@ export default function PlannerView() {
 
       {/* Lifestyle Preferences Modal */}
       {showPrefsModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 bg-[#234B55]/40 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-xl liquid-glass glow-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto text-[#234B55]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#DCECE8]">
               <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-bold text-[#234B55]">
                   Lifestyle &amp; Household Profile
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#687D83]">
                   Updates your daily clean air recommendations dynamically.
                 </p>
               </div>
               <button
                 onClick={() => setShowPrefsModal(false)}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800"
+                className="text-xs font-semibold text-[#687D83] hover:text-[#234B55] px-2.5 py-1.5 rounded-lg bg-[#DCECE8]/60 transition-colors glow-btn"
               >
                 Close
               </button>
@@ -205,7 +205,7 @@ export default function PlannerView() {
 
             {/* Commute Mode */}
             <div className="space-y-2">
-              <label className="text-xs font-mono uppercase font-bold text-slate-700 dark:text-slate-300">
+              <label className="text-xs font-mono uppercase font-bold text-[#234B55]">
                 Primary Commute Method
               </label>
               <select
@@ -215,7 +215,7 @@ export default function PlannerView() {
                     commuteMode: e.target.value as UserLifestylePreferences["commuteMode"],
                   })
                 }
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                className="w-full p-3 rounded-xl bg-white/70 border border-[#DCECE8] text-sm text-[#234B55] focus:outline-none focus:border-[#6BAEAA] glow-input"
               >
                 <option value="metro_train">Electric Metro / Subway Train</option>
                 <option value="electric_bus">City Bus / Electric Transit</option>
@@ -229,7 +229,7 @@ export default function PlannerView() {
 
             {/* Vulnerable Members */}
             <div className="space-y-2">
-              <label className="text-xs font-mono uppercase font-bold text-slate-700 dark:text-slate-300">
+              <label className="text-xs font-mono uppercase font-bold text-[#234B55]">
                 Household Vulnerability (Select all that apply)
               </label>
               <div className="grid grid-cols-2 gap-2 text-xs">
@@ -252,10 +252,10 @@ export default function PlannerView() {
                           : [...userPrefs.vulnerableMembers, item.id as UserLifestylePreferences["vulnerableMembers"][number]];
                         updateUserPrefs({ vulnerableMembers: next });
                       }}
-                      className={`p-3 rounded-xl border text-left font-medium transition-all ${
+                      className={`p-3 rounded-xl border text-left font-medium transition-all glow-btn ${
                         isSelected
-                          ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-300"
-                          : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+                          ? "bg-[#DCECE8] border-[#A9D5C8] text-[#234B55] font-bold glow-selected"
+                          : "bg-white/60 border-[#DCECE8] text-[#687D83]"
                       }`}
                     >
                       {item.label}
@@ -267,26 +267,26 @@ export default function PlannerView() {
 
             {/* Appliance Checks */}
             <div className="space-y-3 pt-2">
-              <label className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
+              <label className="flex items-center gap-3 p-3 rounded-xl border border-[#DCECE8] bg-white/60 hover:bg-[#DCECE8]/30 cursor-pointer glow-card">
                 <input
                   type="checkbox"
                   checked={userPrefs.hasAirPurifier}
                   onChange={(e) => updateUserPrefs({ hasAirPurifier: e.target.checked })}
-                  className="w-4 h-4 text-emerald-600 rounded"
+                  className="w-4 h-4 text-[#234B55] rounded"
                 />
-                <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
+                <span className="text-xs font-medium text-[#234B55]">
                   I have a True-HEPA air purifier in my home
                 </span>
               </label>
 
-              <label className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
+              <label className="flex items-center gap-3 p-3 rounded-xl border border-[#DCECE8] bg-white/60 hover:bg-[#DCECE8]/30 cursor-pointer glow-card">
                 <input
                   type="checkbox"
                   checked={userPrefs.hasKitchenExhaust}
                   onChange={(e) => updateUserPrefs({ hasKitchenExhaust: e.target.checked })}
-                  className="w-4 h-4 text-emerald-600 rounded"
+                  className="w-4 h-4 text-[#234B55] rounded"
                 />
-                <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
+                <span className="text-xs font-medium text-[#234B55]">
                   Kitchen has an operational chimney or ducted exhaust fan
                 </span>
               </label>
@@ -294,7 +294,7 @@ export default function PlannerView() {
 
             <button
               onClick={() => setShowPrefsModal(false)}
-              className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-md"
+              className="w-full py-3.5 rounded-2xl bg-[#234B55] hover:bg-[#1E414A] text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-sm glow-btn"
             >
               Apply &amp; Refresh Plan
             </button>

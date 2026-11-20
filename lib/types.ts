@@ -16,11 +16,134 @@ export interface LocationData {
 }
 
 export interface PollutantMeasurement {
-  value: number;
+  value: number | null;
   unit: string;
   safeLimitWHO?: number;
-  status: "Safe" | "Elevated" | "Dangerous";
-  subIndex?: number;
+  status: "Safe" | "Elevated" | "Dangerous" | "Unavailable";
+  subIndex?: number | null;
+  observationTime?: string;
+  isObserved?: boolean;
+}
+
+export interface HistoricalDataPoint {
+  time: string;
+  formattedTime?: string;
+  cpcbAQI: number;
+  usAQI: number;
+  pm2_5: number | null;
+  pm10: number | null;
+  no2?: number | null;
+  so2?: number | null;
+  co?: number | null;
+  o3?: number | null;
+}
+
+export interface HistoricalSummary {
+  past24h: HistoricalDataPoint[];
+  past7d: Array<{
+    date: string;
+    dayName: string;
+    avgAqi: number;
+    minAqi: number;
+    maxAqi: number;
+    category: AQICategory;
+    dominantPollutant: string;
+  }>;
+  past30d?: Array<{
+    date: string;
+    avgAqi: number;
+    minAqi: number;
+    maxAqi: number;
+    category: AQICategory;
+  }>;
+  change24h: {
+    previousAqi: number;
+    currentAqi: number;
+    deltaAqi: number;
+    percentChange: number;
+    direction: "improving" | "deteriorating" | "stable";
+  };
+  dailyMin: {
+    time: string;
+    aqi: number;
+  };
+  dailyMax: {
+    time: string;
+    aqi: number;
+  };
+  highPollutionDaysCount7d: number;
+}
+
+export interface ForecastIntelligence {
+  hourly: Array<{
+    time: string;
+    formattedTime?: string;
+    pm2_5: number;
+    pm10: number;
+    cpcbAQI: number;
+    usAQI: number;
+    category: AQICategory;
+  }>;
+  next24hSummary: {
+    expectedPeakTime: string;
+    expectedPeakAqi: number;
+    expectedPeakCategory: AQICategory;
+    lowestTime: string;
+    lowestAqi: number;
+    lowestCategory: AQICategory;
+    pm25Delta: number;
+    pm10Delta: number;
+  };
+  bestOutdoorWindow: {
+    startTime: string;
+    endTime: string;
+    avgAqi: number;
+    category: AQICategory;
+    reason: string;
+  };
+  worstOutdoorWindow: {
+    startTime: string;
+    endTime: string;
+    avgAqi: number;
+    category: AQICategory;
+    reason: string;
+  };
+  healthAdvice24h: string[];
+}
+
+export interface SmartAlert {
+  id: string;
+  type: "severe_smog" | "very_poor" | "high_pm25" | "sudden_spike" | "temperature_inversion" | "forecast_deterioration";
+  severity: "emergency" | "warning" | "advisory";
+  title: string;
+  message: string;
+  triggerValue: string;
+  recommendation: string;
+  timestamp: string;
+}
+
+export interface CityComparisonItem {
+  location: LocationData;
+  cpcbAQI: number;
+  cpcbCategory: AQICategory;
+  usAQI: number;
+  dominantPollutant: string;
+  pollutants: {
+    pm2_5: PollutantMeasurement;
+    pm10: PollutantMeasurement;
+    no2: PollutantMeasurement;
+    so2: PollutantMeasurement;
+    co: PollutantMeasurement;
+    o3: PollutantMeasurement;
+  };
+  weather?: {
+    temperature: number;
+    relativeHumidity: number;
+    windSpeedKmH: number;
+  };
+  lastUpdated: string;
+  source: string;
+  past24hSparkline?: number[];
 }
 
 export interface AirQualityData {
@@ -60,11 +183,15 @@ export interface AirQualityData {
     category: AQICategory;
     dominantPollutant: string;
   }>;
+  historical?: HistoricalSummary;
+  forecastIntelligence?: ForecastIntelligence;
+  alerts?: SmartAlert[];
   metadata: {
     dataProvider: string;
     stationName?: string;
     isModelledData: boolean;
     lastUpdated: string;
+    observationTimestamp?: string;
     cpcbStandardCitation: string;
   };
 }

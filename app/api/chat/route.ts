@@ -1,16 +1,25 @@
-// BreatheWise - AI Assistant Server Route
-// Secure Gemini handling with server-side API key protection and fallback engine
+// BreatheWise - Friendly General-Purpose AI Assistant Server Route
+// Secure Gemini handling with server-side API key protection, multi-turn conversation memory & fallback engine
 
 import { NextRequest, NextResponse } from "next/server";
 import { askAirQualityAssistant } from "@/lib/gemini";
 import { AirQualityData, UserLifestylePreferences } from "@/lib/types";
+import { PRESET_LOCATIONS, generateDemoAirQuality } from "@/lib/open-meteo";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { message, aqiContext, userPrefs, history } = body as {
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON request body." },
+        { status: 400 }
+      );
+    }
+    const { message, aqiContext, userPrefs, history } = (body || {}) as {
       message: string;
-      aqiContext: AirQualityData;
+      aqiContext?: AirQualityData;
       userPrefs?: Partial<UserLifestylePreferences>;
       history?: Array<{ role: "user" | "assistant"; content: string }>;
     };
@@ -22,16 +31,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!aqiContext || !aqiContext.location || typeof aqiContext.cpcbAQI !== "number") {
-      return NextResponse.json(
-        { error: "Valid aqiContext is required for environmental grounding." },
-        { status: 400 }
-      );
-    }
+    // Provide default fallback environmental context if not supplied by client
+    const resolvedAqiContext: AirQualityData =
+      aqiContext && aqiContext.location && typeof aqiContext.cpcbAQI === "number"
+        ? aqiContext
+        : generateDemoAirQuality(PRESET_LOCATIONS[0]);
 
     const response = await askAirQualityAssistant(
       message.trim(),
-      aqiContext,
+      resolvedAqiContext,
       userPrefs,
       history || []
     );

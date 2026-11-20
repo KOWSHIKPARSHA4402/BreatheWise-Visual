@@ -13,9 +13,9 @@ import { GlobeCityPin, WORLD_CITIES } from "@/components/globe/EarthGlobe3D";
 const EarthGlobe3D = dynamic(() => import("@/components/globe/EarthGlobe3D"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[600px] flex flex-col items-center justify-center space-y-3 bg-[#070d1e] rounded-3xl">
-      <div className="w-10 h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-      <span className="text-xs font-mono text-cyan-300">Initializing 3D Planetary Simulation...</span>
+    <div className="w-full h-[600px] flex flex-col items-center justify-center space-y-3 bg-[#081326] rounded-3xl">
+      <div className="w-10 h-10 border-2 border-[#6BAEAA] border-t-transparent rounded-full animate-spin" />
+      <span className="text-xs font-mono text-[#A9D5C8]">Initializing Planetary Earth Simulation...</span>
     </div>
   ),
 });
@@ -28,12 +28,14 @@ interface AirIndxHeroProps {
   data: AirQualityData;
   onSelectCityLocation?: (loc: LocationData) => void;
   onOpenDetailsModal?: () => void;
+  onExplainCity?: (city: GlobeCityPin) => void;
 }
 
 export default function AirIndxHero({
   data,
   onSelectCityLocation,
   onOpenDetailsModal,
+  onExplainCity,
 }: AirIndxHeroProps) {
   const [viewMode, setViewMode] = useState<"globe" | "map">("globe");
   const [selectedCityPin, setSelectedCityPin] = useState<GlobeCityPin>(() => {
@@ -65,6 +67,28 @@ export default function AirIndxHero({
     const interval = setInterval(updateTime, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Synchronize hero statistics whenever airQuality data updates
+  useEffect(() => {
+    if (!data) return;
+    setSelectedCityPin((prev) => ({
+      id: prev.id || `loc-${data.location.name.toLowerCase()}`,
+      name: data.location.name,
+      country: data.location.country,
+      countryCode: data.location.countryCode || prev.countryCode || "LOC",
+      flag: prev.name.toLowerCase() === data.location.name.toLowerCase() ? prev.flag : "📍",
+      lat: data.location.latitude,
+      lng: data.location.longitude,
+      aqi: data.cpcbAQI,
+      category: data.cpcbCategory,
+      dominantPollutant: data.dominantPollutant,
+      temp: data.weather?.temperature ?? prev.temp,
+      humidity: data.weather?.relativeHumidity ?? prev.humidity,
+      windSpeed: data.weather?.windSpeedKmH ?? prev.windSpeed,
+      riskPercent: calculateRiskPercentage(data.cpcbAQI),
+      weatherCondition: data.weather?.isSmogTrappingConditions ? "Winter Smog & Inversion" : "Atmospheric Telemetry Active",
+    }));
+  }, [data]);
 
   // Calculate dynamic pollution risk percentage
   const calculateRiskPercentage = (aqi: number) => {
@@ -114,20 +138,20 @@ export default function AirIndxHero({
   };
 
   return (
-    <div className="relative w-full rounded-3xl bg-[#060a16] border border-slate-800/80 shadow-2xl overflow-hidden p-5 sm:p-7 lg:p-8">
+    <div className="relative w-full rounded-3xl bg-[#081326] border border-[#1b354d] shadow-2xl overflow-hidden p-5 sm:p-7 lg:p-8">
       {/* Subtle background latitude/longitude lines */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, #38bdf8 1px, transparent 1px), linear-gradient(to bottom, #38bdf8 1px, transparent 1px)",
+            "linear-gradient(to right, #6BAEAA 1px, transparent 1px), linear-gradient(to bottom, #6BAEAA 1px, transparent 1px)",
           backgroundSize: "64px 64px",
         }}
       />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* ========================================================
-            LEFT COLUMN: Air Quality Information (Matches IMAGE 1)
+            LEFT COLUMN: Air Quality Information
            ======================================================== */}
         <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
           {/* Header: Air Quality Index */}
@@ -141,7 +165,7 @@ export default function AirIndxHero({
             <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-400 font-mono">
               <span className="text-slate-300 font-medium">{currentTimeStr}</span>
               <span className="text-slate-600">|</span>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#11192e] border border-slate-700/80 text-slate-200">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0f2138] border border-[#22445e] text-slate-200">
                 <span className="text-slate-400 font-normal">Local →</span>
                 <span className="text-sm">{selectedCityPin.flag}</span>
                 <span className="font-bold text-white">{selectedCityPin.countryCode}</span>
@@ -151,14 +175,14 @@ export default function AirIndxHero({
           </div>
 
           {/* ========================================================
-              CARD 1: Main Statistics Card (Matches IMAGE 1)
+              CARD 1: Main Statistics Card (Liquid Glass)
              ======================================================== */}
-          <div className="p-6 rounded-2xl bg-[#0c1427]/90 border border-slate-800/80 shadow-xl backdrop-blur-md relative overflow-hidden group hover:border-slate-700 transition-all">
+          <div className="p-6 rounded-3xl liquid-glass-dark glow-card-dark relative overflow-hidden group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
                 Main Statistics
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-slate-800/90 text-cyan-400 border border-cyan-500/20">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-[#132c4a]/80 text-[#A9D5C8] border border-[#6BAEAA]/40 shadow-sm">
                 Live Sensor Telemetry
               </span>
             </div>
@@ -168,18 +192,18 @@ export default function AirIndxHero({
                 AQI
               </span>
               <div className="flex items-baseline gap-3 mt-1">
-                <span className="text-5xl sm:text-6xl font-black text-white tracking-tight">
+                <span className="text-5xl sm:text-6xl font-black text-white tracking-tight drop-shadow-sm">
                   {selectedCityPin.aqi}
                 </span>
                 <span
-                  className={`text-xs font-bold uppercase px-2.5 py-1 rounded-full ${
+                  className={`text-xs font-bold uppercase px-3 py-1 rounded-full shadow-sm ${
                     selectedCityPin.aqi > 200
-                      ? "bg-red-500/20 text-red-300 border border-red-500/40"
+                      ? "bg-[#B85450]/25 text-[#D98E83] border border-[#B85450]/50"
                       : selectedCityPin.aqi > 150
-                      ? "bg-orange-500/20 text-orange-300 border border-orange-500/40"
+                      ? "bg-[#E0937A]/25 text-[#E0937A] border border-[#E0937A]/50"
                       : selectedCityPin.aqi > 100
-                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
-                      : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      ? "bg-[#E9B978]/25 text-[#E9B978] border border-[#E9B978]/50"
+                      : "bg-[#4A9E86]/25 text-[#A9D5C8] border border-[#4A9E86]/50"
                   }`}
                 >
                   {selectedCityPin.category}
@@ -188,14 +212,14 @@ export default function AirIndxHero({
             </div>
 
             {/* Dominant Pollutant line */}
-            <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+            <div className="mt-4 pt-3 border-t border-[#22445e]/60 flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 text-slate-300">
                 <span className="text-slate-400">Dominant Pollutant</span>
                 <span className="font-bold text-white">
                   {selectedCityPin.dominantPollutant}
                 </span>
                 <span className="text-slate-500">—</span>
-                <span className="text-cyan-400">Wind</span>
+                <span className="text-[#6BAEAA]">Wind</span>
               </div>
               <span className="text-[11px] font-mono text-slate-400">
                 {selectedCityPin.windSpeed} km/h
@@ -204,11 +228,11 @@ export default function AirIndxHero({
           </div>
 
           {/* ========================================================
-              CARD 2: Risk of Pollution Card (Matches IMAGE 1)
+              CARD 2: Risk of Pollution Card (Liquid Glass)
              ======================================================== */}
-          <div className="p-6 rounded-2xl bg-[#101b3b]/95 border border-indigo-900/60 shadow-xl backdrop-blur-md relative overflow-hidden group">
+          <div className="p-6 rounded-3xl liquid-glass-dark glow-card-dark relative overflow-hidden group">
             {/* Wavy Wind Breeze SVG Decorative Background */}
-            <div className="pointer-events-none absolute right-2 bottom-2 w-32 h-20 opacity-20 text-cyan-400">
+            <div className="pointer-events-none absolute right-2 bottom-2 w-32 h-20 opacity-20 text-[#6BAEAA]">
               <svg viewBox="0 0 120 60" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M 10 20 Q 40 10 70 20 T 110 15" strokeLinecap="round" />
                 <path d="M 20 35 Q 50 25 80 35 T 105 32" strokeLinecap="round" />
@@ -216,14 +240,14 @@ export default function AirIndxHero({
               </svg>
             </div>
 
-            {/* Header: Risk of Pollution + Bright Yellow "Details" Button */}
+            {/* Header: Risk of Pollution + Soft Amber "Details" Button */}
             <div className="flex items-center justify-between relative z-10">
               <span className="text-sm font-bold text-white">
                 Risk of Pollution
               </span>
               <button
                 onClick={onOpenDetailsModal}
-                className="px-4 py-1.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs transition-all shadow-md shadow-amber-400/20 active:scale-95"
+                className="px-4 py-1.5 rounded-full bg-[#E9B978] hover:bg-[#F2CE9D] text-[#12272C] font-extrabold text-xs transition-all shadow-md glow-btn"
               >
                 Details
               </button>
@@ -240,7 +264,7 @@ export default function AirIndxHero({
             </div>
 
             {/* Weather-related pollution condition note */}
-            <div className="mt-3 text-xs text-indigo-200/90 leading-relaxed relative z-10 max-w-[280px]">
+            <div className="mt-3 text-xs text-[#A9D5C8] leading-relaxed relative z-10 max-w-[280px]">
               {currentRisk > 50
                 ? "High risk due to thermal inversion & winter smog"
                 : currentRisk > 30
@@ -250,39 +274,39 @@ export default function AirIndxHero({
           </div>
 
           {/* ========================================================
-              BOTTOM BAR: Share icons + Coordinates (Matches IMAGE 1)
+              BOTTOM BAR: Share icons + Coordinates
              ======================================================== */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-800/80 text-xs text-slate-400">
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[#22445e]/60 text-xs text-slate-400">
             {/* Share Buttons */}
             <div className="flex items-center gap-2">
               <span className="font-medium text-slate-300">Share</span>
               <button
                 onClick={() => handleShare("fb")}
-                className="w-7 h-7 rounded-lg bg-[#11192e] hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors text-slate-300 text-[11px] font-bold"
+                className="w-7 h-7 rounded-xl bg-[#0f2138] border border-[#22445e] hover:bg-[#183654] hover:text-white flex items-center justify-center transition-colors text-slate-300 text-[11px] font-bold glow-btn"
                 title="Share on Facebook"
               >
                 f
               </button>
               <button
                 onClick={() => handleShare("x")}
-                className="w-7 h-7 rounded-lg bg-[#11192e] hover:bg-slate-700 hover:text-white flex items-center justify-center transition-colors text-slate-300 text-[11px] font-bold"
+                className="w-7 h-7 rounded-xl bg-[#0f2138] border border-[#22445e] hover:bg-[#183654] hover:text-white flex items-center justify-center transition-colors text-slate-300 text-[11px] font-bold glow-btn"
                 title="Share on X"
               >
                 𝕏
               </button>
               <button
                 onClick={() => handleShare("wa")}
-                className="w-7 h-7 rounded-lg bg-[#11192e] hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-colors text-slate-300 text-[11px] font-bold"
+                className="w-7 h-7 rounded-xl bg-[#0f2138] border border-[#22445e] hover:bg-[#183654] hover:text-white flex items-center justify-center transition-colors text-slate-300 text-[11px] font-bold glow-btn"
                 title="Share on WhatsApp"
               >
                 wa
               </button>
               <button
                 onClick={() => handleShare("copy")}
-                className="w-7 h-7 rounded-lg bg-[#11192e] hover:bg-cyan-600 hover:text-white flex items-center justify-center transition-colors text-slate-300 text-[11px]"
+                className="w-7 h-7 rounded-xl bg-[#0f2138] border border-[#22445e] hover:bg-[#183654] hover:text-white flex items-center justify-center transition-colors text-slate-300 text-[11px] glow-btn"
                 title="Copy Link"
               >
-                {copiedShare ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+                {copiedShare ? <Check className="w-3.5 h-3.5 text-[#6BAEAA]" /> : <Share2 className="w-3.5 h-3.5" />}
               </button>
             </div>
 
@@ -310,6 +334,7 @@ export default function AirIndxHero({
               activeLocation={data.location}
               airQuality={data}
               onViewDetails={onOpenDetailsModal}
+              onExplainCity={onExplainCity}
             />
           ) : (
             <IqAirMap
@@ -322,23 +347,23 @@ export default function AirIndxHero({
           {/* ========================================================
               BOTTOM CENTRE SWITCHER PILL: [ 3D GLOBE ] [ IQ AIR MAP ]
              ======================================================== */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center p-1 rounded-full bg-[#0a1226]/90 border border-slate-700/80 shadow-2xl backdrop-blur-md">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center p-1 rounded-full liquid-glass-dark border border-[#214b6d] shadow-2xl">
             <button
               onClick={() => setViewMode("globe")}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all glow-btn ${
                 viewMode === "globe"
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/40"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#234B55] text-white border border-[#6BAEAA]/60 shadow-[0_0_12px_rgba(107,174,170,0.4)]"
+                  : "text-[#8A9EA4] hover:text-white"
               }`}
             >
               3D GLOBE
             </button>
             <button
               onClick={() => setViewMode("map")}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all glow-btn ${
                 viewMode === "map"
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/40"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#234B55] text-white border border-[#6BAEAA]/60 shadow-[0_0_12px_rgba(107,174,170,0.4)]"
+                  : "text-[#8A9EA4] hover:text-white"
               }`}
             >
               IQ AIR MAP

@@ -14,6 +14,7 @@ import {
   Activity,
   Settings,
   X,
+  GraduationCap,
 } from "lucide-react";
 
 interface MobileNavProps {
@@ -23,6 +24,7 @@ interface MobileNavProps {
 
 const navItems = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Air Quality School", href: "/dashboard#school", icon: GraduationCap, badge: "8 Lessons" },
   { name: "Air Quality", href: "/details", icon: Activity },
   { name: "AI Assistant", href: "/assistant", icon: Bot, badge: "Gemini" },
   { name: "My Clean Air Plan", href: "/planner", icon: CalendarCheck2 },
@@ -42,26 +44,26 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-[#234B55]/40 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className="relative w-80 max-w-[85vw] bg-[#0c1428] h-full p-6 flex flex-col justify-between shadow-2xl border-r border-slate-800 z-10 animate-in slide-in-from-left duration-200 text-white">
+      <div className="relative w-80 max-w-[85vw] bg-white/85 backdrop-blur-2xl h-full p-6 flex flex-col justify-between shadow-2xl border-r border-white/80 z-10 animate-in slide-in-from-left duration-200 text-[#234B55]">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DCECE8]">
             <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#234B55] to-[#6BAEAA] flex items-center justify-center text-white shadow-md shadow-[#234B55]/15 ring-2 ring-white/60">
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white">
                   <path d="M12 2L14.2 9.8L22 12L14.2 14.2L12 22L9.8 14.2L2 12L9.8 9.8L12 2Z" />
                 </svg>
               </div>
-              <span className="font-bold text-white text-base tracking-tight">BreatheWise</span>
+              <span className="font-black text-[#234B55] text-base tracking-tight">BreatheWise</span>
             </Link>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-xl text-[#687D83] hover:text-[#234B55] hover:bg-[#DCECE8]/60 transition-colors glow-btn"
             >
               <X className="w-5 h-5" />
             </button>
@@ -78,18 +80,18 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all glow-card ${
                     isActive
-                      ? "bg-blue-600/20 text-cyan-400 border border-cyan-500/30"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                      ? "liquid-glass glow-selected text-[#234B55] font-bold"
+                      : "text-[#687D83] hover:text-[#234B55] hover:bg-white/70"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 text-[#6BAEAA]" />
                     <span>{item.name}</span>
                   </div>
                   {item.badge && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-800">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#DCECE8] text-[#234B55] border border-[#A9D5C8]">
                       {item.badge}
                     </span>
                   )}
@@ -100,7 +102,7 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-slate-800/80 text-[11px] text-slate-500 font-mono">
+        <div className="pt-4 border-t border-[#DCECE8] text-[11px] text-[#687D83] font-mono">
           CPCB NAQI &amp; Copernicus CAMS Telemetry
         </div>
       </div>

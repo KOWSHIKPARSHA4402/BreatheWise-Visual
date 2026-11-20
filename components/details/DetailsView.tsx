@@ -26,7 +26,7 @@ export default function DetailsView() {
       name: string;
       fullName: string;
       formula: string;
-      value: number;
+      value: number | null;
       unit: string;
       subIndex: number;
       whoLimit: number;
@@ -165,96 +165,96 @@ export default function DetailsView() {
   return (
     <div className="space-y-8">
       {/* Top Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-sm relative overflow-hidden space-y-3">
+      <div className="p-6 sm:p-8 rounded-3xl liquid-glass-dark glow-card-dark text-white relative overflow-hidden space-y-3">
         <div className="flex items-center gap-2">
-          <span className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+          <span className="p-1.5 rounded-lg bg-[#6BAEAA]/25 text-[#A9D5C8]">
             <Activity className="w-4 h-4" />
           </span>
-          <span className="text-xs font-mono uppercase font-semibold tracking-wider text-emerald-400">
+          <span className="text-xs font-mono uppercase font-semibold tracking-wider text-[#A9D5C8]">
             Biomedical &amp; Meteorological Deep Dive
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
           Air Quality Analysis: {location.name}
         </h1>
-        <p className="text-xs sm:text-sm text-slate-300 font-light max-w-2xl leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#DCECE8] font-light max-w-2xl leading-relaxed">
           Comprehensive scientific investigation into chemical constituents, biological entry pathways, and meteorological smog inversion conditions.
         </p>
       </div>
 
       {/* Weather & Meteorological Telemetry */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-5">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div className="p-6 sm:p-8 rounded-3xl liquid-glass glow-card space-y-5">
+        <div className="flex items-center justify-between border-b border-[#DCECE8] pb-3">
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+            <h2 className="text-base font-bold text-[#234B55]">
               Ground-Level Meteorological Telemetry
             </h2>
-            <p className="text-xs text-slate-500 font-light">
+            <p className="text-xs text-[#687D83] font-light">
               Atmospheric parameters governing winter smog dispersion and diurnal pollution pooling.
             </p>
           </div>
-          <span className="text-xs font-mono text-slate-400">
+          <span className="text-xs font-mono text-[#687D83]">
             Station: Open-Meteo Copernicus CAMS
           </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 space-y-1">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Thermometer className="w-4 h-4 text-amber-500" />
+          <div className="p-4 rounded-2xl liquid-glass glow-card space-y-1">
+            <div className="flex items-center gap-1.5 text-xs text-[#687D83]">
+              <Thermometer className="w-4 h-4 text-[#E9B978]" />
               <span>Ambient Temp</span>
             </div>
-            <div className="text-2xl font-black font-mono text-slate-900 dark:text-white">
+            <div className="text-2xl font-black font-mono text-[#234B55]">
               {airQuality.weather?.temperature ?? 20}°C
             </div>
-            <span className="text-[10px] text-slate-400 font-mono">Sensible heat</span>
+            <span className="text-[10px] text-[#687D83] font-mono">Sensible heat</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 space-y-1">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Droplets className="w-4 h-4 text-sky-500" />
+          <div className="p-4 rounded-2xl liquid-glass glow-card space-y-1">
+            <div className="flex items-center gap-1.5 text-xs text-[#687D83]">
+              <Droplets className="w-4 h-4 text-[#6BAEAA]" />
               <span>Relative Humidity</span>
             </div>
-            <div className="text-2xl font-black font-mono text-slate-900 dark:text-white">
+            <div className="text-2xl font-black font-mono text-[#234B55]">
               {airQuality.weather?.relativeHumidity ?? 65}%
             </div>
-            <span className="text-[10px] text-slate-400 font-mono">Moisture retention</span>
+            <span className="text-[10px] text-[#687D83] font-mono">Moisture retention</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 space-y-1">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Wind className="w-4 h-4 text-teal-500" />
+          <div className="p-4 rounded-2xl liquid-glass glow-card space-y-1">
+            <div className="flex items-center gap-1.5 text-xs text-[#687D83]">
+              <Wind className="w-4 h-4 text-[#A9D5C8]" />
               <span>Wind Velocity</span>
             </div>
-            <div className="text-2xl font-black font-mono text-slate-900 dark:text-white">
+            <div className="text-2xl font-black font-mono text-[#234B55]">
               {airQuality.weather?.windSpeedKmH ?? 6} km/h
             </div>
-            <span className="text-[10px] text-slate-400 font-mono">
+            <span className="text-[10px] text-[#687D83] font-mono">
               {(airQuality.weather?.windSpeedKmH ?? 6) < 6 ? "Calm / Stagnant" : "Breezy"}
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 space-y-1">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Compass className="w-4 h-4 text-indigo-500" />
+          <div className="p-4 rounded-2xl liquid-glass glow-card space-y-1">
+            <div className="flex items-center gap-1.5 text-xs text-[#687D83]">
+              <Compass className="w-4 h-4 text-[#234B55]" />
               <span>Wind Direction</span>
             </div>
-            <div className="text-2xl font-black font-mono text-slate-900 dark:text-white">
+            <div className="text-2xl font-black font-mono text-[#234B55]">
               {airQuality.weather?.windDirection ?? 180}°
             </div>
-            <span className="text-[10px] text-slate-400 font-mono">Azimuth angle</span>
+            <span className="text-[10px] text-[#687D83] font-mono">Azimuth angle</span>
           </div>
         </div>
 
         {/* Smog Inversion Diagnosis */}
-        <div className={`p-4 rounded-2xl border text-xs leading-relaxed space-y-1.5 ${theme.bgLight} ${theme.borderColor}`}>
-          <div className="font-bold font-mono uppercase text-[11px] flex items-center gap-1.5 text-slate-900 dark:text-white">
+        <div className={`p-4 rounded-2xl border text-xs leading-relaxed space-y-1.5 ${theme.bgLight} ${theme.borderColor} glow-card`}>
+          <div className="font-bold font-mono uppercase text-[11px] flex items-center gap-1.5 text-[#234B55]">
             <span>Atmospheric Dispersion Diagnosis:</span>
             <span className={theme.textColor}>
               {airQuality.weather?.isSmogTrappingConditions ? "Severe Winter Entrapment" : "Normal Dispersion"}
             </span>
           </div>
-          <p className="text-slate-700 dark:text-slate-300 font-light">
+          <p className="text-[#687D83] font-light">
             {airQuality.weather?.isSmogTrappingConditions
               ? "Current wind speed (< 6 km/h) combined with high relative humidity prevents vertical mixing. Cold ground air acts as a stagnant sink, trapping tailpipe soot and biomass smoke directly in the breathing zone."
               : "Surface wind speeds exceed 6 km/h, providing moderate horizontal transport and atmospheric ventilation across the metropolitan area."}
@@ -263,12 +263,12 @@ export default function DetailsView() {
       </div>
 
       {/* Interactive Pollutant Selector & Biomedical Matrix */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-6">
+      <div className="p-6 sm:p-8 rounded-3xl liquid-glass glow-card space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-xl font-bold text-[#234B55] tracking-tight">
             Biomedical Pollutant Profiler
           </h2>
-          <p className="text-xs text-slate-500 font-light mt-0.5">
+          <p className="text-xs text-[#687D83] font-light mt-0.5">
             Select a pollutant below to inspect its chemical origin, human body impact, and prevention techniques.
           </p>
         </div>
@@ -281,8 +281,8 @@ export default function DetailsView() {
               onClick={() => setSelectedPollutant(key)}
               className={`px-4 py-2 rounded-2xl text-xs font-mono font-bold whitespace-nowrap transition-all ${
                 selectedPollutant === key
-                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-[#234B55] text-white shadow-sm glow-selected"
+                  : "bg-white/60 border border-[#DCECE8] text-[#687D83] hover:text-[#234B55] glow-btn"
               }`}
             >
               <span>{item.name}</span> ({item.value} {item.unit})
@@ -291,28 +291,28 @@ export default function DetailsView() {
         </div>
 
         {/* Detailed Selected Pollutant Card */}
-        <div className="p-6 rounded-3xl bg-slate-50/70 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800 pb-4">
+        <div className="p-6 rounded-3xl liquid-glass glow-card space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#DCECE8] pb-4">
             <div>
-              <div className="text-[11px] font-mono uppercase text-emerald-600 dark:text-emerald-400 font-bold">
+              <div className="text-[11px] font-mono uppercase text-[#6BAEAA] font-bold">
                 {currentDetail.formula} · {currentDetail.fullName}
               </div>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
+              <h3 className="text-2xl font-black text-[#234B55] mt-0.5">
                 {currentDetail.name}
               </h3>
             </div>
 
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <span className="text-[10px] font-mono text-slate-500 block uppercase">Concentration</span>
-                <span className="text-3xl font-black font-mono text-slate-900 dark:text-white">
-                  {currentDetail.value} <span className="text-xs font-normal text-slate-500">{currentDetail.unit}</span>
+                <span className="text-[10px] font-mono text-[#687D83] block uppercase">Concentration</span>
+                <span className="text-3xl font-black font-mono text-[#234B55]">
+                  {currentDetail.value} <span className="text-xs font-normal text-[#687D83]">{currentDetail.unit}</span>
                 </span>
               </div>
-              <div className="text-right pl-4 border-l border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] font-mono text-slate-500 block uppercase">WHO 24h Limit</span>
-                <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                  {currentDetail.whoLimit} <span className="text-xs font-normal text-slate-500">{currentDetail.unit}</span>
+              <div className="text-right pl-4 border-l border-[#DCECE8]">
+                <span className="text-[10px] font-mono text-[#687D83] block uppercase">WHO 24h Limit</span>
+                <span className="text-xl font-bold font-mono text-[#4A9E86]">
+                  {currentDetail.whoLimit} <span className="text-xs font-normal text-[#687D83]">{currentDetail.unit}</span>
                 </span>
               </div>
             </div>
@@ -321,13 +321,13 @@ export default function DetailsView() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Primary Origins */}
             <div className="space-y-3">
-              <h4 className="text-xs font-mono uppercase font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+              <h4 className="text-xs font-mono uppercase font-bold text-[#234B55] flex items-center gap-2">
                 <span>Primary Urban Sources</span>
               </h4>
-              <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-300 font-light leading-relaxed">
+              <ul className="space-y-2 text-xs text-[#687D83] font-light leading-relaxed">
                 {currentDetail.primarySources.map((src, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <span className="text-emerald-500 font-bold">•</span>
+                    <span className="text-[#6BAEAA] font-bold">•</span>
                     <span>{src}</span>
                   </li>
                 ))}
@@ -336,13 +336,13 @@ export default function DetailsView() {
 
             {/* Health Impact Pathways */}
             <div className="space-y-3">
-              <h4 className="text-xs font-mono uppercase font-bold text-red-700 dark:text-red-400 flex items-center gap-2">
+              <h4 className="text-xs font-mono uppercase font-bold text-[#B85450] flex items-center gap-2">
                 <span>Biological &amp; Organ Pathways</span>
               </h4>
-              <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-300 font-light leading-relaxed">
+              <ul className="space-y-2 text-xs text-[#687D83] font-light leading-relaxed">
                 {currentDetail.healthPathways.map((path, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold">•</span>
+                    <span className="text-[#B85450] font-bold">•</span>
                     <span>{path}</span>
                   </li>
                 ))}
@@ -351,8 +351,8 @@ export default function DetailsView() {
           </div>
 
           {/* Action Recommendation */}
-          <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs flex items-center gap-3 text-emerald-900 dark:text-emerald-200">
-            <ArrowRight className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="p-4 rounded-2xl bg-[#DCECE8] border border-[#A9D5C8] text-xs flex items-center gap-3 text-[#234B55]">
+            <ArrowRight className="w-4 h-4 text-[#234B55] shrink-0" />
             <span>
               <strong>Targeted Family Action:</strong> {currentDetail.mitigationAction}
             </span>

@@ -10,47 +10,48 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-export default function QuickActionBanner() {
+interface QuickActionBannerProps {
+  onOpenAssistant?: () => void;
+}
+
+export default function QuickActionBanner({ onOpenAssistant }: QuickActionBannerProps) {
   const actions = [
     {
       title: "Ask the AI Assistant",
       desc: "Get location-aware medical guidance, school recess advice, and outdoor safety protocols powered by Gemini.",
       href: "/assistant",
+      onClick: onOpenAssistant,
       icon: Bot,
-      color: "from-emerald-500 to-teal-600",
-      accentBg: "hover:border-emerald-500/60",
+      color: "from-[#234B55] to-[#6BAEAA]",
       badge: "Gemini 1.5 Grounded",
-      badgeClass: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+      badgeClass: "bg-[#DCECE8] text-[#234B55] border-[#A9D5C8]",
     },
     {
       title: "Generate My Clean Air Plan",
       desc: "Create an adaptive 4-phase daily schedule matched to your commute method, work hours, and children's routines.",
       href: "/planner",
       icon: CalendarCheck2,
-      color: "from-sky-500 to-blue-600",
-      accentBg: "hover:border-sky-500/60",
+      color: "from-[#6BAEAA] to-[#A9D5C8]",
       badge: "Adaptive Schedule",
-      badgeClass: "bg-sky-500/20 text-sky-300 border-sky-500/30",
+      badgeClass: "bg-[#DCECE8] text-[#234B55] border-[#A9D5C8]",
     },
     {
       title: "Improve Indoor Air Quality",
       desc: "Calculate required True-HEPA CADR for your bedroom and learn scientific techniques for diurnal ventilation.",
       href: "/indoor-air",
       icon: Home,
-      color: "from-indigo-500 to-purple-600",
-      accentBg: "hover:border-indigo-500/60",
+      color: "from-[#234B55] to-[#79BFAE]",
       badge: "CADR Calculator",
-      badgeClass: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
+      badgeClass: "bg-[#DCECE8] text-[#234B55] border-[#A9D5C8]",
     },
     {
       title: "Explore Green Choices",
       desc: "Discover sustainable transit alternatives that adapt automatically based on whether ambient smog is safe or severe.",
       href: "/green-choices",
       icon: Sparkles,
-      color: "from-teal-500 to-emerald-600",
-      accentBg: "hover:border-teal-500/60",
+      color: "from-[#E9B978] to-[#6BAEAA]",
       badge: "AQI-Sensitive",
-      badgeClass: "bg-teal-500/20 text-teal-300 border-teal-500/30",
+      badgeClass: "bg-[#DCECE8] text-[#234B55] border-[#A9D5C8]",
     },
   ];
 
@@ -58,10 +59,10 @@ export default function QuickActionBanner() {
     <div className="space-y-4">
       {/* Section Header */}
       <div>
-        <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+        <h2 className="text-xl font-bold text-[#234B55] tracking-tight flex items-center gap-2">
           <span>Intelligent Action Center</span>
         </h2>
-        <p className="text-xs text-slate-400 font-light">
+        <p className="text-xs text-[#687D83] font-light">
           Contextual tools to protect your family&apos;s respiratory health and reduce urban emissions.
         </p>
       </div>
@@ -70,17 +71,13 @@ export default function QuickActionBanner() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {actions.map((act) => {
           const Icon = act.icon;
-          return (
-            <Link
-              key={act.title}
-              href={act.href}
-              className={`p-6 rounded-3xl bg-[#0f172a] border border-slate-800 transition-all flex flex-col justify-between space-y-4 shadow-sm group hover:-translate-y-1 hover:shadow-xl ${act.accentBg}`}
-            >
+          const content = (
+            <div className="p-6 rounded-3xl liquid-glass glow-card flex flex-col justify-between space-y-4 group h-full cursor-pointer">
               <div className="space-y-3">
                 {/* Header Icon & Badge */}
                 <div className="flex items-center justify-between">
                   <div
-                    className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${act.color} text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform`}
+                    className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${act.color} text-white flex items-center justify-center shadow-md shadow-[#234B55]/15 ring-2 ring-white/70 group-hover:scale-105 transition-transform`}
                   >
                     <Icon className="w-5 h-5" />
                   </div>
@@ -92,20 +89,45 @@ export default function QuickActionBanner() {
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-base text-white group-hover:text-emerald-400 transition-colors leading-snug">
+                  <h3 className="font-bold text-base text-[#234B55] group-hover:text-[#6BAEAA] transition-colors leading-snug">
                     {act.title}
                   </h3>
-                  <p className="mt-1.5 text-xs text-slate-400 font-light leading-relaxed">
+                  <p className="mt-1.5 text-xs text-[#687D83] font-light leading-relaxed">
                     {act.desc}
                   </p>
                 </div>
               </div>
 
               {/* Action Footer */}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-emerald-400 group-hover:text-emerald-300">
+              <div className="pt-3 border-t border-[#DCECE8] flex items-center justify-between text-xs font-bold text-[#234B55] group-hover:text-[#6BAEAA] transition-colors">
                 <span>Launch Tool</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
+            </div>
+          );
+
+          if (act.onClick) {
+            return (
+              <div
+                key={act.title}
+                onClick={act.onClick}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    act.onClick?.();
+                  }
+                }}
+              >
+                {content}
+              </div>
+            );
+          }
+
+          return (
+            <Link key={act.title} href={act.href}>
+              {content}
             </Link>
           );
         })}

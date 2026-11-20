@@ -57,34 +57,34 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#F4F8F6] text-[#234B55] flex flex-col justify-between selection:bg-[#6BAEAA] selection:text-white">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-40 w-full border-b border-white/60 bg-white/80 backdrop-blur-xl px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#234B55] to-[#6BAEAA] flex items-center justify-center text-white shadow-md shadow-[#234B55]/15 glow-btn">
             <Wind className="w-5 h-5" />
           </div>
           <div>
-            <div className="font-bold text-lg tracking-tight flex items-center gap-1.5">
+            <div className="font-bold text-lg tracking-tight flex items-center gap-1.5 text-[#234B55]">
               <span>BreatheWise</span>
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-semibold">
+              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#DCECE8] text-[#234B55] font-semibold">
                 AI
               </span>
             </div>
-            <p className="text-xs text-slate-500 font-medium">Urban Air Quality Intelligence</p>
+            <p className="text-xs text-[#687D83] font-medium">Urban Air Quality Intelligence</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
-            className="hidden sm:inline-flex px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="hidden sm:inline-flex px-4 py-2 rounded-xl text-xs font-semibold text-[#687D83] hover:text-[#234B55] transition-colors glow-btn"
           >
             Live Dashboard
           </Link>
           <Link
             href="/assistant"
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/20 flex items-center gap-1.5"
+            className="px-4 py-2.5 rounded-xl bg-[#234B55] hover:bg-[#1E414A] text-white text-xs font-bold transition-all shadow-md shadow-[#234B55]/20 flex items-center gap-1.5 glow-btn"
           >
             <span>Launch Assistant</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -96,20 +96,20 @@ export default function LandingPage() {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-20">
         <div className="text-center space-y-6 max-w-4xl mx-auto">
           {/* Hackathon Challenge Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs font-mono font-semibold text-emerald-800 dark:text-emerald-300 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full liquid-glass border border-[#A9D5C8] text-xs font-mono font-semibold text-[#234B55] shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#4A9E86] animate-pulse" />
             <span>Hack2Skill PromptWars Challenge 6: Urban Winter Smog Navigation</span>
           </div>
 
           {/* Hero Main Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#234B55] leading-[1.15]">
             Intelligent Protection from{" "}
-            <span className="bg-gradient-to-r from-emerald-600 via-teal-500 to-sky-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#234B55] via-[#6BAEAA] to-[#2D5E6B] bg-clip-text text-transparent">
               Severe Winter Smog
             </span>
           </h1>
 
-          <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-[#687D83] font-light max-w-2xl mx-auto leading-relaxed">
             BreatheWise combines real-time Copernicus environmental telemetry with Google Gemini GenAI to guide families through hazardous urban air pollution.
           </p>
 
@@ -117,7 +117,7 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link
               href="/dashboard"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xl shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all hover:scale-105"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#234B55] hover:bg-[#1E414A] text-white font-bold text-sm shadow-xl shadow-[#234B55]/20 flex items-center justify-center gap-2 transition-all hover:scale-105 glow-btn"
             >
               <span>Explore Live Air Quality</span>
               <ArrowRight className="w-4 h-4" />
@@ -125,21 +125,21 @@ export default function LandingPage() {
 
             <Link
               href="/assistant"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-all"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl liquid-glass text-[#234B55] border border-[#DCECE8] font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-all glow-btn"
             >
-              <Bot className="w-4 h-4 text-emerald-600" />
+              <Bot className="w-4 h-4 text-[#6BAEAA]" />
               <span>Ask AI Smog Assistant</span>
             </Link>
           </div>
 
           {/* Preset Hotspot Badges */}
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500">
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-[#687D83]">
             <span className="font-mono text-[11px] uppercase">Monitored Hotspots:</span>
             {PRESET_LOCATIONS.map((loc) => (
               <Link
                 key={loc.name}
                 href="/dashboard"
-                className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500 transition-colors"
+                className="px-2.5 py-1 rounded-lg liquid-glass border border-[#DCECE8] text-[#234B55] hover:border-[#6BAEAA] transition-colors font-medium glow-btn"
               >
                 {loc.name}
               </Link>
@@ -149,38 +149,38 @@ export default function LandingPage() {
 
         {/* 3 Core Questions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold font-mono">
+          <div className="p-6 rounded-3xl liquid-glass glow-card space-y-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#DCECE8] text-[#234B55] flex items-center justify-center font-bold font-mono">
               01
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+            <h3 className="text-lg font-bold text-[#234B55]">
               How polluted is my air right now?
             </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+            <p className="text-xs text-[#687D83] font-light leading-relaxed">
               Live CPCB National AQI, PM2.5, PM10, meteorological thermal inversions, and 24-hour diurnal peak curves from Copernicus CAMS.
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
-            <div className="w-10 h-10 rounded-2xl bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold font-mono">
+          <div className="p-6 rounded-3xl liquid-glass glow-card space-y-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#DCECE8] text-[#234B55] flex items-center justify-center font-bold font-mono">
               02
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+            <h3 className="text-lg font-bold text-[#234B55]">
               What should my family do today?
             </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+            <p className="text-xs text-[#687D83] font-light leading-relaxed">
               Personalized 4-phase daily plans, True-HEPA purifier room sizing, N95 masking timing, and school recess cautions for children.
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
-            <div className="w-10 h-10 rounded-2xl bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-400 flex items-center justify-center font-bold font-mono">
+          <div className="p-6 rounded-3xl liquid-glass glow-card space-y-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#DCECE8] text-[#234B55] flex items-center justify-center font-bold font-mono">
               03
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+            <h3 className="text-lg font-bold text-[#234B55]">
               How can I reduce emissions?
             </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+            <p className="text-xs text-[#687D83] font-light leading-relaxed">
               AQI-sensitive green choices, anti-idling practices, and a DEFRA-backed emissions calculator showing verified monthly CO2 savings.
             </p>
           </div>
@@ -189,10 +189,10 @@ export default function LandingPage() {
         {/* Feature Matrix Grid */}
         <div className="space-y-6">
           <div className="text-center space-y-2">
-            <span className="text-xs font-mono uppercase text-emerald-600 font-bold tracking-wider">
+            <span className="text-xs font-mono uppercase text-[#6BAEAA] font-bold tracking-wider">
               Comprehensive Platform Capabilities
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#234B55]">
               Engineered for Real-World Environmental Navigation
             </h2>
           </div>
@@ -203,22 +203,22 @@ export default function LandingPage() {
               return (
                 <div
                   key={feat.title}
-                  className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm hover:border-emerald-500/50 transition-all"
+                  className="p-6 rounded-3xl liquid-glass glow-card space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400">
+                    <div className="p-3 rounded-2xl bg-[#DCECE8]/60 text-[#234B55]">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-full bg-[#F4F8F6] border border-[#DCECE8] text-[#234B55]">
                       {feat.badge}
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                  <h3 className="font-bold text-base text-[#234B55]">
                     {feat.title}
                   </h3>
 
-                  <p className="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+                  <p className="text-xs text-[#687D83] font-light leading-relaxed">
                     {feat.desc}
                   </p>
                 </div>
@@ -228,23 +228,23 @@ export default function LandingPage() {
         </div>
 
         {/* Severe Smog Protocol Callout */}
-        <div className="p-8 rounded-3xl bg-gradient-to-r from-red-950 via-slate-900 to-purple-950 text-white border border-red-900/60 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="p-8 rounded-3xl liquid-glass-dark glow-card-dark text-white flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 max-w-xl">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase text-red-400 font-bold">
-              <AlertTriangle className="w-4 h-4 text-red-500" />
+            <div className="flex items-center gap-2 text-xs font-mono uppercase text-[#E9B978] font-bold">
+              <AlertTriangle className="w-4 h-4 text-[#E9B978]" />
               <span>Winter Smog Inversion Protocol</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-bold">
               When Regional AQI Exceeds 300 (Severe Smog)
             </h3>
-            <p className="text-xs text-slate-300 font-light leading-relaxed">
+            <p className="text-xs text-[#DCECE8]/90 font-light leading-relaxed">
               BreatheWise automatically adapts recommendations to emergency defense: window sealing, continuous bedroom HEPA filtration, and strict avoidance of early morning outdoor hyperventilation.
             </p>
           </div>
 
           <Link
             href="/dashboard"
-            className="px-6 py-3.5 rounded-2xl bg-white text-slate-950 font-bold text-xs hover:bg-slate-100 transition-colors shadow-lg flex items-center gap-2 shrink-0"
+            className="px-6 py-3.5 rounded-2xl bg-white text-[#234B55] font-bold text-xs hover:bg-[#F4F8F6] transition-colors shadow-lg flex items-center gap-2 shrink-0 glow-btn"
           >
             <span>Open Dashboard</span>
             <ChevronRight className="w-4 h-4" />
@@ -253,13 +253,13 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-10 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <footer className="border-t border-[#DCECE8] liquid-glass py-10 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#687D83]">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-900 dark:text-white">BreatheWise</span>
+            <span className="font-bold text-[#234B55]">BreatheWise</span>
             <span>· Hack2Skill PromptWars Challenge 6</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-500 font-mono">
+          <div className="flex items-center gap-4 text-[#687D83] font-mono">
             <span>Next.js 14 App Router</span>
             <span>Google Gemini GenAI</span>
             <span>Copernicus CAMS</span>

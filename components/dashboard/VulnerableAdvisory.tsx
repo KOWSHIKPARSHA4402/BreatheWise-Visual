@@ -22,7 +22,16 @@ export default function VulnerableAdvisory({ data }: VulnerableAdvisoryProps) {
         : isPoor
         ? "Limit prolonged outdoor physical games. Keep bedroom windows shut during early morning inversion hours."
         : "Safe for regular outdoor playtime, school sports, and park visits.",
-      color: isPoor ? "border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/20" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900",
+      color: isSevere
+        ? "border-[#B85450]/40 bg-[#B85450]/10"
+        : isPoor
+        ? "border-[#E9B978]/60 bg-[#E9B978]/10"
+        : "border-[#DCECE8] bg-white",
+      badgeColor: isSevere
+        ? "bg-[#B85450]/20 text-[#611A17] border border-[#B85450]/40"
+        : isPoor
+        ? "bg-[#E9B978]/30 text-[#75460E] border border-[#E9B978]/60"
+        : "bg-[#DCECE8] text-[#234B55] border border-[#A9D5C8]",
     },
     {
       group: "Elderly & Seniors (65+)",
@@ -33,7 +42,16 @@ export default function VulnerableAdvisory({ data }: VulnerableAdvisoryProps) {
         : isPoor
         ? "Postpone morning walks to sunny afternoon hours (1 PM - 4 PM) when atmospheric dispersion is peak."
         : "Healthy outdoor activities and walking are encouraged.",
-      color: isPoor ? "border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900",
+      color: isSevere
+        ? "border-[#B85450]/40 bg-[#B85450]/10"
+        : isPoor
+        ? "border-[#E0937A]/60 bg-[#E0937A]/10"
+        : "border-[#DCECE8] bg-white",
+      badgeColor: isSevere
+        ? "bg-[#B85450]/20 text-[#611A17] border border-[#B85450]/40"
+        : isPoor
+        ? "bg-[#E0937A]/25 text-[#753424] border border-[#E0937A]/50"
+        : "bg-[#DCECE8] text-[#234B55] border border-[#A9D5C8]",
     },
     {
       group: "Asthma & Respiratory Patients",
@@ -44,7 +62,16 @@ export default function VulnerableAdvisory({ data }: VulnerableAdvisoryProps) {
         : isPoor
         ? "Wear an N95 mask if walking along major traffic arteries. Take preventative inhaler doses as prescribed."
         : "Airway irritation risk is low. Maintain regular maintenance medication.",
-      color: isPoor ? "border-purple-200 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/20" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900",
+      color: isSevere
+        ? "border-[#B85450]/40 bg-[#B85450]/10"
+        : isPoor
+        ? "border-[#D98E83]/60 bg-[#D98E83]/15"
+        : "border-[#DCECE8] bg-white",
+      badgeColor: isSevere
+        ? "bg-[#B85450]/20 text-[#611A17] border border-[#B85450]/40"
+        : isPoor
+        ? "bg-[#D98E83]/25 text-[#72271E] border border-[#D98E83]/50"
+        : "bg-[#DCECE8] text-[#234B55] border border-[#A9D5C8]",
     },
     {
       group: "Daily Commuters & Outdoor Workers",
@@ -55,17 +82,26 @@ export default function VulnerableAdvisory({ data }: VulnerableAdvisoryProps) {
         : isPoor
         ? "Wear an N95 mask on two-wheelers and bus stops. Switch vehicle AC to air recirculation mode."
         : "Open cabin ventilation and cycling commutes are safe today.",
-      color: isPoor ? "border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/20" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900",
+      color: isSevere
+        ? "border-[#B85450]/40 bg-[#B85450]/10"
+        : isPoor
+        ? "border-[#E9B978]/60 bg-[#E9B978]/10"
+        : "border-[#DCECE8] bg-white",
+      badgeColor: isSevere
+        ? "bg-[#B85450]/20 text-[#611A17] border border-[#B85450]/40"
+        : isPoor
+        ? "bg-[#E9B978]/30 text-[#75460E] border border-[#E9B978]/60"
+        : "bg-[#DCECE8] text-[#234B55] border border-[#A9D5C8]",
     },
   ];
 
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+        <h2 className="text-xl font-bold text-[#234B55] tracking-tight">
           Vulnerable Population Health Advisories
         </h2>
-        <p className="text-xs text-slate-500 font-light">
+        <p className="text-xs text-[#687D83] font-light">
           Contextual medical precautions based on current CPCB National AQI {data.cpcbAQI} ({data.cpcbCategory}).
         </p>
       </div>
@@ -76,29 +112,35 @@ export default function VulnerableAdvisory({ data }: VulnerableAdvisoryProps) {
           return (
             <div
               key={item.group}
-              className={`p-5 rounded-2xl border transition-all ${item.color} space-y-3 flex flex-col justify-between`}
+              className={`p-5 rounded-3xl liquid-glass glow-card space-y-3 flex flex-col justify-between ${
+                isSevere
+                  ? "border-[#B85450]/40"
+                  : isPoor
+                  ? "border-[#E9B978]/60"
+                  : "border-[#DCECE8]"
+              }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
-                    <Icon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <div className="p-2.5 rounded-2xl bg-[#DCECE8] text-[#234B55] shadow-sm">
+                    <Icon className="w-4 h-4 text-[#234B55]" />
                   </div>
-                  <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  <span className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full ${item.badgeColor}`}>
                     {item.badge}
                   </span>
                 </div>
 
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h3 className="font-bold text-sm text-[#234B55]">
                   {item.group}
                 </h3>
 
-                <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+                <p className="mt-2 text-xs text-[#687D83] font-light leading-relaxed">
                   {item.desc}
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-slate-200/60 dark:border-slate-800/60 text-[11px] font-mono text-slate-500">
-                Action: {isPoor ? "Protective Mitigation" : "Normal Routine"}
+              <div className="pt-2 border-t border-[#DCECE8] text-[11px] font-mono text-[#687D83]">
+                {data.cpcbAQI > 300 ? "Emergency Protocol" : "Recommended Guideline"}
               </div>
             </div>
           );
